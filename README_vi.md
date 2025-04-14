@@ -27,7 +27,7 @@
 
 ## 🗂️ Cấu trúc dự án | Project Structure
 
-\`\`\`
+```
 efood/
 │
 ├── backend/          # NestJS backend API
@@ -38,7 +38,7 @@ efood/
 │   └── src/          # UI components, app pages, stores...
 │
 ├── docker-compose.yml
-\`\`\`
+```
 
 ---
 
