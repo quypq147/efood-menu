@@ -1,4 +1,4 @@
-
+[English](https://github.com/quypq147/efood-menu/blob/main/README.md)     [Vietnamese](https://github.com/quypq147/efood-menu/blob/main/README_vi.md)
 # 🍽️ Efood – Ứng dụng quản lý thực đơn quán ăn  
 **Efood – A Menu Management System for Restaurants**
 
