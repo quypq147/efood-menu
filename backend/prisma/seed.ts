@@ -51,6 +51,17 @@ const rolePermissionsMap: Record<string, string[]> = {
 };
 
 async function main() {
+  // Step 0 : Kiểm tra xem có tồn tại role nào không(Khong thi tao)
+  const roles = ['Admin', 'Staff', 'Customer'];
+  await Promise.all(
+    roles.map((name) =>
+      prisma.role.upsert({
+        where: { name },
+        update: {},
+        create: { name },
+      }),
+    ),
+  );
   // Step 1: Tạo permissions nếu chưa có
   const createdPermissions = await Promise.all(
     permissions.map((perm) =>
@@ -58,12 +69,14 @@ async function main() {
         where: { name: perm },
         update: {},
         create: { name: perm },
-      })
-    )
+      }),
+    ),
   );
 
   // Step 2: Gán quyền cho từng role
-  for (const [roleName, permissionNames] of Object.entries(rolePermissionsMap)) {
+  for (const [roleName, permissionNames] of Object.entries(
+    rolePermissionsMap,
+  )) {
     const role = await prisma.role.findUnique({
       where: { name: roleName },
     });
@@ -79,7 +92,7 @@ async function main() {
     });
 
     const matchedPermissions = createdPermissions.filter((p) =>
-      permissionNames.includes(p.name)
+      permissionNames.includes(p.name),
     );
 
     // Gán mới
@@ -102,6 +115,3 @@ main()
     process.exit(1);
   })
   .finally(() => prisma.$disconnect());
-
-
-

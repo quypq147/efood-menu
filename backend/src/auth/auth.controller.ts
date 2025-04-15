@@ -2,9 +2,14 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Get,
   NotFoundException,
+  Patch,
   Post,
+  Query,
+  Req,
   Res,
+  UseGuards,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { randomBytes } from 'crypto';
@@ -12,6 +17,7 @@ import * as bcrypt from 'bcrypt';
 import { AuthService } from './auth.service';
 import { PrismaService } from '../prisma.service';
 import { MailService } from '../mail/mail.service';
+import { JwtAuthGuard } from './jwt-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -22,13 +28,22 @@ export class AuthController {
   ) {}
 
   @Post('register')
-  register(@Body() body: { name: string; email: string; password: string }) {
+  register(
+    @Body()
+    body: {
+      fullname: string;
+      email: string;
+      password: string;
+      username?: string;
+    },
+  ) {
     return this.authService.register(body);
   }
 
   @Post('login')
   async login(
-    @Body() body: { email: string; password: string },
+    @Body()
+    body: { emailOrUsername: string; password: string },
     @Res({ passthrough: true }) res: Response,
   ) {
     const { accessToken, user } = await this.authService.login(body);
@@ -37,7 +52,7 @@ export class AuthController {
       httpOnly: true,
       secure: false,
       sameSite: 'lax',
-      maxAge: 1000 * 60 * 60 * 24, // 1 ngày
+      maxAge: 1000 * 60 * 60 * 24, // 1 day
     });
 
     return { user };
@@ -55,11 +70,10 @@ export class AuthController {
       where: { email },
     });
 
-    // Không tiết lộ email có tồn tại hay không
     if (!user) return { message: 'Email khôi phục đã được gửi.' };
 
     const token = randomBytes(32).toString('hex');
-    const expires = new Date(Date.now() + 1000 * 60 * 30); // 30 phút
+    const expires = new Date(Date.now() + 1000 * 60 * 30);
 
     await this.prisma.user.update({
       where: { email },
@@ -83,9 +97,7 @@ export class AuthController {
     });
 
     if (!user) {
-      throw new BadRequestException(
-        'Token không hợp lệ hoặc đã hết hạn',
-      );
+      throw new BadRequestException('Token không hợp lệ hoặc đã hết hạn');
     }
 
     const hashed = await bcrypt.hash(dto.password, 10);
@@ -99,5 +111,17 @@ export class AuthController {
     });
 
     return { message: 'Đặt lại mật khẩu thành công' };
+  }
+  @Get('verify-email')
+  async verifyEmail(@Query('token') token: string) {
+    return this.authService.verifyEmail(token);
+  }
+  @Patch('change-password')
+  @UseGuards(JwtAuthGuard)
+  async changePassword(
+    @Req() req,
+    @Body() body: { currentPassword: string; newPassword: string },
+  ) {
+    return this.authService.changePassword(req.user.id, body);
   }
 }

@@ -10,7 +10,8 @@ export class UserService {
       where: { id },
       select: {
         id: true,
-        name: true,
+        fullname: true,
+        username: true,
         email: true,
         address: true,
         birthDate: true,

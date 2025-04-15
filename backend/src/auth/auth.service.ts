@@ -1,4 +1,3 @@
-// auth.service.ts
 import {
   BadRequestException,
   Injectable,
@@ -12,20 +11,31 @@ import { MailService } from '../mail/mail.service';
 
 @Injectable()
 export class AuthService {
-  [x: string]: any;
   constructor(
     private prisma: PrismaService,
-    private MailService: MailService,
+    private mailService: MailService,
     private jwtService: JwtService,
   ) {}
 
-  async register(data: { name: string; email: string; password: string }) {
-    const existingUser = await this.prisma.user.findUnique({
-      where: { email: data.email },
+  async register(data: {
+    fullname: string;
+    email: string;
+    password: string;
+    username?: string;
+  }) {
+    const existingUser = await this.prisma.user.findFirst({
+      where: {
+        OR: [
+          { email: data.email },
+          data.username ? { username: data.username } : undefined,
+        ].filter(Boolean) as any,
+      },
     });
+
     if (existingUser) {
-      throw new Error('Email đã được đăng ký.');
+      throw new BadRequestException('Email hoặc username đã được sử dụng.');
     }
+
     const hashed = await bcrypt.hash(data.password, 10);
     const token = randomBytes(32).toString('hex');
 
@@ -39,44 +49,67 @@ export class AuthService {
 
     const user = await this.prisma.user.create({
       data: {
-        name: data.name,
+        fullname: data.fullname,
         email: data.email,
         password: hashed,
+        username: data.username ?? '',
         roleId: defaultRole.id,
         isEmailVerified: false,
         emailVerifyToken: token,
       },
     });
-    await this.MailService.sendVerifyEmail(user.email, token);
-    return { message: 'Đăng ký thành công', user };
+
+    await this.mailService.sendVerifyEmail(user.email, token);
+    return {
+      message: 'Đăng ký thành công. Vui lòng kiểm tra email để xác minh.',
+      user,
+    };
   }
 
-  async login(data: { email: string; password: string }) {
-    const user = await this.prisma.user.findUnique({
-      where: { email: data.email },
-      include: { role: true }, // ✅ thêm dòng này
+  async login(data: { emailOrUsername: string; password: string }) {
+    const user = await this.prisma.user.findFirst({
+      where: {
+        OR: [
+          { email: data.emailOrUsername },
+          { username: data.emailOrUsername },
+        ],
+      },
+      include: {
+        role: {
+          include: {
+            permissions: {
+              include: { permission: true },
+            },
+          },
+        },
+      },
     });
-    
 
     if (!user || !(await bcrypt.compare(data.password, user.password))) {
-      throw new UnauthorizedException('Sai email hoặc mật khẩu');
+      throw new UnauthorizedException('Sai thông tin đăng nhập');
     }
 
     if (!user.isEmailVerified) {
-      throw new UnauthorizedException('Bạn chưa xác minh email.');
+      throw new UnauthorizedException('Tài khoản chưa xác minh email');
     }
 
-    const payload = { sub: user.id, email: user.email, role: user.roleId };
+    const payload = {
+      sub: user.id,
+      email: user.email,
+      role: user.roleId,
+    };
+
     const token = this.jwtService.sign(payload);
 
     return {
       accessToken: token,
       user: {
         id: user.id,
-        name: user.name,
+        fullname: user.fullname,
         email: user.email,
         roleId: user.roleId,
-        roleName : user.role.name,
+        roleName: user.role.name,
+        permissions: user.role.permissions.map((rp) => rp.permission.name),
       },
     };
   }
@@ -101,5 +134,27 @@ export class AuthService {
     });
 
     return { message: 'Xác minh email thành công. Bạn có thể đăng nhập.' };
+  }
+  async changePassword(
+    userId: number,
+    body: { currentPassword: string; newPassword: string },
+  ) {
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!user) throw new Error('Người dùng không tồn tại');
+
+    const passwordMatch = await bcrypt.compare(
+      body.currentPassword,
+      user.password,
+    );
+    if (!passwordMatch)
+      throw new UnauthorizedException('Mật khẩu hiện tại không đúng');
+
+    const hashed = await bcrypt.hash(body.newPassword, 10);
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { password: hashed },
+    });
+
+    return { message: 'Đổi mật khẩu thành công' };
   }
 }

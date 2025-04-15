@@ -8,6 +8,7 @@ export const fetchCurrentUser = async () => {
 
 export const updateCurrentUser = async (data: {
   name?: string;
+  phoneNumber?: string;
   address?: string;
   birthDate?: string;
 }) => {

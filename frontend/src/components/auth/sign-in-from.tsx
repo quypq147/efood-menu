@@ -14,7 +14,7 @@ import { toast } from "sonner";
 import { useUserStore } from "@/store/userStore";
 
 export default function SignInForm() {
-  const [form, setForm] = useState({ email: "", password: "" });
+  const [form, setForm] = useState({ emailOrUsername: "", password: "" });
   const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -38,28 +38,20 @@ export default function SignInForm() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-[#1c1c28] px-4">
       <Link href="/" className="flex items-center mb-6">
-        <Image
-          src={icons.logo}
-          alt="Logo"
-          width={40}
-          height={40}
-          className="mr-2"
-        />
+        <Image src={icons.logo} alt="Logo" width={40} height={40} className="mr-2" />
         <span className="text-xl font-bold text-white">Efood</span>
       </Link>
+
       <form onSubmit={handleSubmit} className="bg-[#2a2a3c] p-8 rounded-2xl w-full max-w-md shadow-md">
-        <h2 className="text-2xl font-bold text-center text-white mb-6">
-          Đăng Nhập
-        </h2>
+        <h2 className="text-2xl font-bold text-center text-white mb-6">Đăng Nhập</h2>
 
         <div className="space-y-4">
           <div>
-            <Label className="text-white">Tên tài khoản</Label>
+            <Label className="text-white">Email hoặc Tên tài khoản</Label>
             <Input
-              placeholder="Nhập email"
-              type="email"
-              value={form.email}
-              onChange={(e) => setForm({ ...form, email: e.target.value })}
+              placeholder="Nhập email hoặc username"
+              value={form.emailOrUsername}
+              onChange={(e) => setForm({ ...form, emailOrUsername: e.target.value })}
               className="mt-1 bg-gray-100"
               required
             />
@@ -95,22 +87,20 @@ export default function SignInForm() {
           >
             {loading ? "Đang đăng nhập..." : "Đăng nhập"}
           </Button>
+
           <p className="text-right text-sm mt-1">
-  <Link href="/auth/forgot-password" className="text-blue-400 hover:underline">
-    Quên mật khẩu?
-  </Link>
-</p>
+            <Link href="/auth/forgot-password" className="text-blue-400 hover:underline">
+              Quên mật khẩu?
+            </Link>
+          </p>
 
           <Button type="button" variant="outline" className="w-full bg-white text-black">
             Đăng nhập qua Gmail
           </Button>
 
           <p className="text-center text-sm text-white mt-4">
-            Nếu bạn chưa có tài khoản{' '}
-            <Link
-              href="/auth/sign-up"
-              className="text-blue-400 hover:underline"
-            >
+            Nếu bạn chưa có tài khoản{" "}
+            <Link href="/auth/sign-up" className="text-blue-400 hover:underline">
               Đăng ký ngay
             </Link>
           </p>
@@ -119,4 +109,5 @@ export default function SignInForm() {
     </div>
   );
 }
+
 

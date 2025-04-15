@@ -39,9 +39,11 @@ model Permission {
 
 model User {
   id               Int       @id @default(autoincrement())
-  name             String
+  fullname             String
+  username        String    @unique
   email            String    @unique
   password         String
+  phoneNumber     String?
   address          String?
   birthDate        DateTime?
   roleId           Int

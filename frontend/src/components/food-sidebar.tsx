@@ -50,7 +50,7 @@ export function FoodSidebar() {
         {isLoggedIn && user && (
           <div className="text-center mt-2">
             <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-sm font-bold text-black mx-auto">
-              {user.name?.charAt(0).toUpperCase() || "?"}
+              {user.fullname?.charAt(0).toUpperCase() || "?"}
             </div>
             <p className="text-xs text-white mt-1 truncate w-16">{user.name}</p>
           </div>

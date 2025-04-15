@@ -18,8 +18,8 @@ services:
     container_name: pgadmin
     restart: always
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@admin.com
-      PGADMIN_DEFAULT_PASSWORD: admin123
+      PGADMIN_DEFAULT_EMAIL: quypq147@quypq147.com
+      PGADMIN_DEFAULT_PASSWORD: quypq147
     ports:
       - "5050:80"
     depends_on:
