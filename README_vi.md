@@ -27,7 +27,7 @@
 
 ## 🗂️ Cấu trúc dự án | Project Structure
 
-\`\`\`
+```
 efood/
 │
 ├── backend/          # NestJS backend API
@@ -38,7 +38,7 @@ efood/
 │   └── src/          # UI components, app pages, stores...
 │
 ├── docker-compose.yml
-\`\`\`
+```
 
 ---
 
@@ -52,12 +52,12 @@ efood/
 
 ### ⬇️ Cài đặt | Install
 
-\`\`\`bash
+```bash
 git clone https://github.com/your-repo/efood.git
 cd efood
-\`\`\`
+```
 
-\`\`\`bash
+```bash
 # Backend
 cd backend
 npm install
@@ -65,7 +65,7 @@ npm install
 # Frontend
 cd ../frontend
 npm install
-\`\`\`
+```
 
 ---
 
@@ -73,13 +73,13 @@ npm install
 
 Tạo các file môi trường:
 
-\`\`\`bash
+```bash
 # Backend
 cp .env.example .env
 
 # Frontend
 cp .env.local.example .env.local
-\`\`\`
+```
 
 Cấu hình biến: \`DATABASE_URL\`, \`JWT_SECRET\`, \`NEXT_PUBLIC_API_URL\`,...
 
@@ -89,9 +89,9 @@ Cấu hình biến: \`DATABASE_URL\`, \`JWT_SECRET\`, \`NEXT_PUBLIC_API_URL\`,..
 
 ### 🐳 Với Docker | With Docker
 
-\`\`\`bash
+```bash
 docker-compose up --build
-\`\`\`
+```
 
 - Frontend: http://localhost:3000  
 - Backend: http://localhost:30
@@ -100,7 +100,7 @@ docker-compose up --build
 
 ### ⚙️ Thủ công | Manual
 
-\`\`\`bash
+```bash
 # Backend
 cd backend
 npm run start:dev
@@ -108,7 +108,7 @@ npm run start:dev
 # Frontend
 cd ../frontend
 npm run dev
-\`\`\`
+```
 
 ---
 
