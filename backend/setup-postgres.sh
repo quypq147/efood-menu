@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# ─── CẤU HÌNH ─────────────────────────────────────────────
+# ─── CONFIG ──────────────────────────────────────────────
 PG_CONTAINER_NAME="my-postgres"
 PG_PORT="5432"
 PG_USER="quypq147"
@@ -13,17 +13,23 @@ PGADMIN_PORT="5050"
 PGADMIN_EMAIL="quypq147@quypq147.com"
 PGADMIN_PASSWORD="quypq147"
 
-# ─── CHẠY CONTAINER POSTGRES VÀ PGADMIN ───────────────────
-echo "🚀 Khởi chạy Docker containers..."
+# ─── REMOVE OLD CONTAINERS ───────────────────────────────
+echo "🧹 Removing old containers (if any)..."
+docker rm -f $PG_CONTAINER_NAME $PGADMIN_CONTAINER_NAME > /dev/null 2>&1
 
+# ─── START POSTGRES CONTAINER ─────────────────────────────
+echo "🚀 Starting PostgreSQL container..."
 docker run -d \
   --name $PG_CONTAINER_NAME \
   -e POSTGRES_USER=$PG_USER \
   -e POSTGRES_PASSWORD=$PG_PASSWORD \
   -e POSTGRES_DB=$PG_DB \
   -p $PG_PORT:5432 \
+  -v pgdata:/var/lib/postgresql/data \
   postgres:15
 
+# ─── START PGADMIN CONTAINER ──────────────────────────────
+echo "🚀 Starting pgAdmin container..."
 docker run -d \
   --name $PGADMIN_CONTAINER_NAME \
   -e PGADMIN_DEFAULT_EMAIL=$PGADMIN_EMAIL \
@@ -32,29 +38,31 @@ docker run -d \
   --link $PG_CONTAINER_NAME:postgres \
   dpage/pgadmin4
 
-# ─── CHỜ POSTGRES SẴN SÀNG ───────────────────────────────
-echo "⏳ Đang chờ PostgreSQL khởi động..."
-sleep 10
 
-# ─── IMPORT BACKUP NẾU TỒN TẠI ────────────────────────────
+
+# ─── IMPORT BACKUP IF EXISTS ──────────────────────────────
 if [ -f "$BACKUP_FILE" ]; then
-  echo "📦 Đang import dữ liệu từ $BACKUP_FILE..."
-  docker cp $BACKUP_FILE $PG_CONTAINER_NAME:/backup.sql
-  docker exec -u postgres $PG_CONTAINER_NAME psql -U $PG_USER -d $PG_DB -f /backup.sql
-  echo "✅ Import hoàn tất."
+  echo "📦 Importing data from $BACKUP_FILE..."
+  docker cp "$BACKUP_FILE" "$PG_CONTAINER_NAME":/backup.sql
+  docker exec -i $PG_CONTAINER_NAME psql -U $PG_USER -d $PG_DB -f /backup.sql
+  echo "✅ Data imported successfully!"
 else
-  echo "⚠️ Không tìm thấy file $BACKUP_FILE. Bỏ qua bước import."
+  echo "⚠️ File $BACKUP_FILE not found. Skipping import."
 fi
 
-# ─── IN RA THÔNG TIN KẾT NỐI ──────────────────────────────
+# ─── DISPLAY CONNECTION INFO ──────────────────────────────
 echo ""
-echo "📌 Kết nối PostgreSQL bằng DBeaver:"
-echo "  Host: localhost"
-echo "  Port: $PG_PORT"
-echo "  User: $PG_USER"
-echo "  Password: $PG_PASSWORD"
-echo "  Database: $PG_DB"
+echo "📌 PostgreSQL Connection Info:"
+echo "  🔸 Host: localhost"
+echo "  🔸 Port: $PG_PORT"
+echo "  🔸 Database: $PG_DB"
+echo "  🔸 Username: $PG_USER"
+echo "  🔸 Password: $PG_PASSWORD"
 echo ""
-echo "🌐 Mở pgAdmin tại: http://localhost:$PGADMIN_PORT"
-echo "  Email: $PGADMIN_EMAIL"
-echo "  Password: $PGADMIN_PASSWORD"
+echo "🌐 Access pgAdmin: http://localhost:$PGADMIN_PORT"
+echo "  🔸 Email: $PGADMIN_EMAIL"
+echo "  🔸 Password: $PGADMIN_PASSWORD"
+
+
+
+
