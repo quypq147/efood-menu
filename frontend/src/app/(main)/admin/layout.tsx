@@ -9,7 +9,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const router = useRouter();
 
   useEffect(() => {
-    if (isLoggedIn && user?.roleName !== 'Admin') {
+    if (!isLoggedIn && user?.roleName !== 'Admin') {
       router.replace('/403'); // redirect nếu không phải admin
     }
   }, [user, isLoggedIn]);
