@@ -7,13 +7,14 @@ type User = {
   email: string;
   roleId: number;
   roleName: string;
+  permissions: string[];
 };
 
 type UserState = {
   user: User | null;
   isLoggedIn: boolean;
   setUser: (user: User) => void;
-  logout: () => void;
+  clearUser: () => void;
 };
 
 export const useUserStore = create<UserState>()(
@@ -22,7 +23,7 @@ export const useUserStore = create<UserState>()(
       user: null,
       isLoggedIn: false,
       setUser: (user) => set({ user, isLoggedIn: true }),
-      logout: () => set({ user: null, isLoggedIn: false }),
+      clearUser: () => set({ user: null, isLoggedIn: false }),
     }),
     {
       name: 'user-store', // ⬅ tên key lưu vào localStorage

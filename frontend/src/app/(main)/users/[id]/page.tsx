@@ -26,15 +26,14 @@ export default function UserSettingsPage() {
   });
 
   const [passwordForm, setPasswordForm] = useState({
-    oldPassword: '',
-    newPassword: '',
+    oldPassword: '...',
+    newPassword: '...',
   });
 
   useEffect(() => {
     const fetchUser = async () => {
       try {
         const res = await axiosInstance.get(`/users/${id}`);
-        console.log('res', res.data);
         setUser(res.data);
 
         setForm({
@@ -73,7 +72,10 @@ export default function UserSettingsPage() {
   const handlePasswordSubmit = async () => {
     try {
       setLoading(true);
-      await axiosInstance.patch('/auth/change-password', passwordForm);
+      await axiosInstance.patch('/auth/change-password', {
+        currentPassword: passwordForm.oldPassword,
+        newPassword: passwordForm.newPassword,
+      });
       toast.success('Mật khẩu đã được đổi');
       setPasswordForm({ oldPassword: '', newPassword: '' });
     } catch {

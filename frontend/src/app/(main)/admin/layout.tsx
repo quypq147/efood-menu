@@ -17,7 +17,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     }
   }, [mounted, isLoggedIn, user]);
 
-  if (!mounted) return null; // ✅ Không render gì trước khi xác thực xong
+  if (!mounted) return null;
 
   return <>{children}</>;
 }

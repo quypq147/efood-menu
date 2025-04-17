@@ -1,39 +1,40 @@
-// app/(main)/layout.tsx
-'use client';
-
-import { Geist, Geist_Mono } from 'next/font/google';
+// app/layout.tsx
 import './globals.css';
-import { SidebarProvider } from '@/components/ui/sidebar';
-import { FoodSidebar } from '@/components/food-sidebar';
+import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
+import { Toaster } from '@/components/ui/sonner';
 import { cn } from '@/lib/utils';
+import { FoodSidebar } from '@/components/food-sidebar'; // đảm bảo đúng path
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin'],
-});
+const inter = Inter({ subsets: ['latin'] });
 
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin'],
-});
+export const metadata: Metadata = {
+  title: 'Efood',
+  description: 'Ứng dụng quản lý thực đơn quán ăn',
+};
 
-export default function MainLayout({
+export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
-    <div
-      className={cn(
-        geistSans.variable,
-        geistMono.variable,
-        'flex min-h-screen antialiased bg-[#393C49]'
-      )}
-    >
-      <SidebarProvider>
-        <FoodSidebar />
-        <main className="flex-1 p-6 overflow-auto">{children}</main>
-      </SidebarProvider>
-    </div>
+    <html lang="en">
+      <body className={cn(inter.className , 'bg-background text-foreground')}>
+        <div className="flex">
+          {/* Sidebar cố định */}
+          <div className="fixed top-0 left-0 h-screen w-[80px] z-50">
+            <FoodSidebar />
+          </div>
+
+          {/* Nội dung chính với margin-left để tránh đè lên sidebar */}
+          <main className="ml-[80px] w-full overflow-y-auto h-screen bg-[#393C49] scroll-smooth">
+            {children}
+          </main>
+        </div>
+        <Toaster />
+      </body>
+    </html>
   );
 }
+

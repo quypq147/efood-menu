@@ -92,7 +92,7 @@ export function FoodSidebar() {
         {isLoggedIn ? (
           <SidebarIcon
             icon={<LogOut size={20} />}
-            href="/logout"
+            href="/auth/logout"
             tooltip="Đăng xuất"
             isActive={pathname === '/logout'}
           />

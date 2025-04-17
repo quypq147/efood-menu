@@ -141,6 +141,9 @@ export class AuthService {
   ) {
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
     if (!user) throw new Error('Người dùng không tồn tại');
+    if (!body.currentPassword || !user.password) {
+      throw new Error('Thiếu thông tin để đổi mật khẩu');
+    }
 
     const passwordMatch = await bcrypt.compare(
       body.currentPassword,
