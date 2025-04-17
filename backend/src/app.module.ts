@@ -1,13 +1,14 @@
 import { Module } from '@nestjs/common';
+import { PrismaService } from './prisma.service';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { RoleModule } from './role/role.module';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { MailModule } from './mail/mail.module';
-import { PermissonsController } from './permissons/permissons.controller';
+import { PermissionController } from './permissons/permissons.controller';
 import { PermissonsService } from './permissons/permissons.service';
-import { PermissonsModule } from './permissons/permissons.module';
+import { PermissionModule } from './permissons/permissons.module';
 import { RolePermissionsController } from './role-permissions/role-permissions.controller';
 
 @Module({
@@ -16,10 +17,10 @@ import { RolePermissionsController } from './role-permissions/role-permissions.c
     AuthModule,
     UserModule,
     MailModule,
-    PermissonsModule, // ✅ Import module, không cần re-provide
+    PermissionModule, // ✅ Import module, không cần re-provide
   ],
-  controllers: [AppController, PermissonsController, RolePermissionsController],
-  providers: [AppService, PermissonsService], 
+  controllers: [AppController, PermissionController, RolePermissionsController],
+  providers: [AppService, PermissonsService , PrismaService], 
 })
 export class AppModule {}
 

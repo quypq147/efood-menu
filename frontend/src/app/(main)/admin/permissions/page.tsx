@@ -82,7 +82,7 @@ export default function RolePermissionMatrix() {
   };
 
   return (
-    <div className="p-6 bg-[#1c1c28] text-white rounded-lg">
+    <div className="p-2 bg-[#1c1c28] text-white rounded-lg">
       <h2 className="text-2xl font-bold mb-6">🛡️ Chỉnh sửa vai trò và quyền</h2>
       <div className="overflow-auto rounded-lg border border-gray-700">
         <table className="min-w-full text-sm">

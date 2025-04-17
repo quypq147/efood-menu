@@ -1,28 +1,33 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
 type User = {
   id: number;
   fullname: string;
-  phoneNumber: string;
-  address: string;
   email: string;
-  role?: {
-    id: number;
-    name: string;
-  };
+  roleId: number;
+  roleName: string;
 };
 
-interface UserState {
-  isLoggedIn: boolean;
+type UserState = {
   user: User | null;
+  isLoggedIn: boolean;
   setUser: (user: User) => void;
   logout: () => void;
-}
+};
 
-export const useUserStore = create<UserState>((set) => ({
-  isLoggedIn: false,
-  user: null,
-  setUser: (user) => set({ user, isLoggedIn: true }),
-  logout: () => set({ user: null, isLoggedIn: false }),
-}));
+export const useUserStore = create<UserState>()(
+  persist(
+    (set) => ({
+      user: null,
+      isLoggedIn: false,
+      setUser: (user) => set({ user, isLoggedIn: true }),
+      logout: () => set({ user: null, isLoggedIn: false }),
+    }),
+    {
+      name: 'user-store', // ⬅ tên key lưu vào localStorage
+    }
+  )
+);
+
 

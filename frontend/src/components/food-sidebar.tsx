@@ -21,11 +21,14 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { useHasMounted } from '@/hooks/useHasMounted';
 
 export function FoodSidebar() {
+  const hasMounted = useHasMounted();
   const { isLoggedIn, user } = useUserStore();
   console.log('user', user);
   const pathname = usePathname();
+  if (!hasMounted) return null;
   const isAdmin = user?.roleName === 'Admin';
 
   const navItems = [
