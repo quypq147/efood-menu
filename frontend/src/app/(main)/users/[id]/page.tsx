@@ -26,8 +26,8 @@ export default function UserSettingsPage() {
   });
 
   const [passwordForm, setPasswordForm] = useState({
-    oldPassword: '...',
-    newPassword: '...',
+    oldPassword: '',
+    newPassword: '',
   });
 
   useEffect(() => {

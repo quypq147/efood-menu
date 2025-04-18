@@ -5,6 +5,7 @@ import { axiosInstance } from '@/lib/axios';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from 'sonner';
+import BreadcrumbTabs from '@/components/BreadcrumbTabs';
 
 export default function UserListPage() {
   const [users, setUsers] = useState([]);
@@ -33,13 +34,14 @@ export default function UserListPage() {
   };
 
   return (
-    <div className="p-6 text-white">
-      <h1 className="text-2xl font-bold mb-4">Người dùng</h1>
-      <div className="space-y-4">
+    <div className="p-6 text-white space-y-6">
+      <BreadcrumbTabs />
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {users.map((user: any) => (
-          <div key={user.id} className="bg-[#2a2a3c] p-4 rounded-lg flex justify-between items-center">
+          <div key={user.id} className="bg-[#2a2a3c] p-5 rounded-lg shadow flex justify-between items-center hover:shadow-lg transition">
             <div>
-              <div className="font-semibold">{user.name}</div>
+              <div className="text-base font-semibold">{user.fullname || user.name}</div>
               <div className="text-sm text-gray-400">{user.email}</div>
             </div>
 
@@ -61,3 +63,4 @@ export default function UserListPage() {
     </div>
   );
 }
+

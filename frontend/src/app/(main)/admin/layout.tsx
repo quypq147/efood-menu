@@ -19,7 +19,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   if (!mounted) return null;
 
-  return <>{children}</>;
+  return (
+    <div className="p-6 text-white space-y-6">
+      {children}
+    </div>
+  );
 }
 
 
