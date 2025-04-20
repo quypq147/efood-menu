@@ -20,27 +20,57 @@ export class RoleService {
     return this.prisma.role.create({ data });
   }
 
-  async updateRole(id: number, dto: { name?: string; permissionIds?: number[] }) {
-    const role = await this.prisma.role.update({
+  async updateRole(
+    id: number,
+    dto: {
+      name?: string;
+      description?: string;
+      permissionIds?: number[];
+      userIds?: number[];
+    },
+  ) {
+    const { name, description, permissionIds = [], userIds = [] } = dto;
+  
+    const updatedRole = await this.prisma.role.update({
       where: { id },
       data: {
-        name: dto.name,
-        permissions: dto.permissionIds
-          ? {
-              deleteMany: {},
-              create: dto.permissionIds.map((pid) => ({
-                permissionId: pid,
-              })),
-            }
-          : undefined,
+        name,
+        description,
+        permissions: {
+          deleteMany: {}, // clear old permissions
+          createMany: {
+            data: permissionIds.map((permissionId) => ({
+              permissionId,
+            })),
+          },
+        },
+        users: {
+          set: userIds.map((id) => ({ id })), // override users of role
+        },
+      },
+      include: {
+        permissions: { include: { permission: true } },
+        users: true,
       },
     });
-    return role;
+  
+    return updatedRole;
   }
+  
+  
 
-  deleteRole(id: number) {
-    return this.prisma.role.delete({ where: { id } });
+  async deleteRole(id: number) {
+    // Xóa các quyền liên kết với vai trò trước
+    await this.prisma.rolePermission.deleteMany({
+      where: { roleId: id },
+    });
+  
+    // Sau đó mới xóa vai trò
+    return this.prisma.role.delete({
+      where: { id },
+    });
   }
+  
 }
 
 

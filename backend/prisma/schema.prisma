@@ -16,8 +16,9 @@ datasource db {
 model Role {
   id          Int              @id @default(autoincrement())
   name        String           @unique
-  users       User[]
-  permissions RolePermission[]
+  description String?          // ✅ thêm mô tả vai trò
+  users       User[]           // Danh sách người dùng thuộc vai trò
+  permissions RolePermission[] // Danh sách quyền
 }
 
 model RolePermission {

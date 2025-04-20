@@ -112,9 +112,13 @@ export class AuthController {
 
     return { message: 'Đặt lại mật khẩu thành công' };
   }
-  @Get('verify-email')
-  async verifyEmail(@Query('token') token: string) {
-    return this.authService.verifyEmail(token);
+  @Post('verify-email')
+verifyEmail(@Body('token') token: string) {
+  return this.authService.verifyEmail(token);
+}
+  @Post('resend-verify-email')
+  async resendEmail(@Body('emailOrUsername') value: string) {
+    return this.authService.resendVerificationEmail(value);
   }
   @Patch('change-password')
   @UseGuards(JwtAuthGuard)

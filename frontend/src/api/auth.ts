@@ -24,3 +24,9 @@ export const registerUser = async (data: {
 export const logoutUser = async () => {
   await axiosInstance.post('/auth/logout', {}, { withCredentials: true });
 };
+export const resendVerifyEmail = async (emailOrUsername: string) => {
+  const res = await axiosInstance.post('/auth/resend-verify-email', {
+    emailOrUsername,
+  });
+  return res.data;
+};

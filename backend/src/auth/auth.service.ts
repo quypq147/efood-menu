@@ -160,4 +160,25 @@ export class AuthService {
 
     return { message: 'Đổi mật khẩu thành công' };
   }
+  // auth.service.ts
+  async resendVerificationEmail(emailOrUsername: string) {
+    const user = await this.prisma.user.findFirst({
+      where: {
+        OR: [{ email: emailOrUsername }, { username: emailOrUsername }],
+      },
+    });
+
+    if (!user || user.isEmailVerified) {
+      throw new BadRequestException('Không thể gửi xác minh');
+    }
+
+    const token = randomBytes(32).toString('hex');
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data: { emailVerifyToken: token },
+    });
+
+    await this.mailService.sendVerifyEmail(user.email, token);
+    return { message: 'Email xác minh đã được gửi lại.' };
+  }
 }
