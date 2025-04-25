@@ -93,13 +93,13 @@ export default function UserSettingsPage() {
           <TabsList className="bg-[#1f1f2e] rounded-lg flex gap-2 mb-4 w-full max-w-md">
             <TabsTrigger
               value="profile"
-              className="flex-1 py-2 text-base data-[state=active]:bg-[#ff6b5c] data-[state=active]:text-white"
+              className="flex-1 py-2 text-white text-base data-[state=active]:bg-[#ff6b5c] data-[state=active]:text-white"
             >
               🧑 Hồ sơ
             </TabsTrigger>
             <TabsTrigger
               value="security"
-              className="flex-1 py-2 text-base data-[state=active]:bg-[#ff6b5c] data-[state=active]:text-white"
+              className="flex-1 py-2 text-white text-base data-[state=active]:bg-[#ff6b5c] data-[state=active]:text-white"
             >
               🔒 Bảo mật
             </TabsTrigger>
