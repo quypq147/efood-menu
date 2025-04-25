@@ -1,4 +1,0 @@
-docker cp backup.sql my-postgres:/backup.sql
-docker exec -it my-postgres bash
-psql -U quypq147 -d demo_db < /backup.sql
-docker exec -it my-postgres psql -U quypq147 -d demo_db -f /backup.sql
