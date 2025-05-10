@@ -7,6 +7,7 @@ import {
   LogOut,
   Users,
   ShieldUser,
+  LucideLayoutDashboard,
 } from 'lucide-react';
 import { icons } from '@/lib/icons';
 import Image from 'next/image';
@@ -19,7 +20,7 @@ export function FoodSidebar() {
 
   const navItems = [
     { icon: <Home size={20} />, href: '/', tooltip: 'Trang chủ' },
-    { icon: <Utensils size={20} />, href: '/menu', tooltip: 'Thực đơn' },
+    { icon: <LucideLayoutDashboard size={20} />, href: '/dashboard', tooltip: 'Thực đơn' },
     { icon: <Settings size={20} />, href: '/settings', tooltip: 'Cài đặt' },
   ];
 
@@ -32,7 +33,7 @@ export function FoodSidebar() {
   }
 
   return (
-    <aside className="h-screen rounded-r-lg w-[80px] bg-[#1F1D2B] border-r flex flex-col justify-between items-center py-6">
+    <aside className="h-screen rounded-r-lg w-[80px] bg-[#1F1D2B] border-r flex flex-col justify-between items-center py-6 ">
       {/* Logo */}
       <div className="space-y-6 flex flex-col items-center">
         <div className="rounded-xl bg-primary p-2">

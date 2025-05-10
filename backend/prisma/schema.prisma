@@ -16,9 +16,9 @@ datasource db {
 model Role {
   id          Int              @id @default(autoincrement())
   name        String           @unique
-  description String?          // ✅ thêm mô tả vai trò
-  users       User[]           // Danh sách người dùng thuộc vai trò
-  permissions RolePermission[] // Danh sách quyền
+  description String?          
+  users       User[]           
+  permissions RolePermission[] 
 }
 
 model RolePermission {
@@ -31,7 +31,17 @@ model RolePermission {
 
   @@unique([roleId, permissionId])
 }
-
+model Review{
+  id       Int      @id @default(autoincrement())
+  userId    Int
+  foodId    Int
+  rating    Int
+  comment   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id])
+  food      Food     @relation(fields: [foodId], references: [id])
+}
 model Permission {
   id    Int              @id @default(autoincrement())
   name  String           @unique
@@ -55,7 +65,11 @@ model User {
   role       Role     @relation(fields: [roleId], references: [id])
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+  reviews    Review[]
+  
   emailToken String?
+
+  Order Order[]
 }
 
 model Category {
@@ -71,8 +85,40 @@ model Food {
   price       Float
   image       String
   status      Boolean  @default(true)
+  stock Int @default(0)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   categoryId  Int
   category    Category @relation(fields: [categoryId], references: [id])
+
+  OrderItem OrderItem[]
+  reviews Review[]
+}
+model Order {
+  id        Int      @id @default(autoincrement())
+  orderNumber String   @unique
+  userId    Int
+  total     Float
+  status    OrderStatus @default(PENDING)   // Trạng thái đơn hàng (pending, completed, cancelled)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id])
+
+  OrderItem OrderItem[]
+}
+model OrderItem {
+  id        Int      @id @default(autoincrement())
+  orderId   Int
+  foodId    Int
+  quantity  Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  order     Order    @relation(fields: [orderId], references: [id])
+  food      Food     @relation(fields: [foodId], references: [id])
+}
+
+enum OrderStatus {
+  PENDING
+  COMPLETED
+  CANCELLED
 }

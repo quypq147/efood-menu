@@ -10,104 +10,112 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import FoodManagementPage from "@/components/FoodManagementPage";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
 const sidebarItems = [
-  { label: "Appearance", icon: Moon },
-  { label: "Your Restaurant", icon: LayoutDashboard },
-  { label: "Notifications", icon: Bell },
-  { label: "Security", icon: ShieldCheck },
-  { label: "About Us", icon: Info },
+  {
+    label: "Appearance",
+    icon: Moon,
+    description: "Dark and Light mode, Font size",
+  },
+  {
+    label: "Your Restaurant",
+    icon: LayoutDashboard,
+    description: "Manage your restaurant settings",
+  },
+  {
+    label: "Products Management",
+    icon: Globe2,
+    description: "Manage your product, pricing, etc",
+  },
+  {
+    label: "Notifications",
+    icon: Bell,
+    description: "Customize your notifications",
+  },
+  {
+    label: "Security",
+    icon: ShieldCheck,
+    description: "Configure Password, PIN, etc",
+  },
+  {
+    label: "About Us",
+    icon: Info,
+    description: "Find out more about Posly",
+  },
 ];
 
 export default function SettingsPage() {
-  const [activeTab, setActiveTab] = useState("Appearance");
-  const [darkMode, setDarkMode] = useState(false);
-  const [language, setLanguage] = useState("vi");
+  const [activeTab, setActiveTab] = useState();
 
   return (
-    <div className="flex flex-col  text-white p-6">
-      <h2 className="text-xl font-bold mb-6">Settings</h2>
-      <div className="flex gap-2 text-white">
+    <div className="flex ml-10 h-screen text-white">
+      {/* Header */}
+      <div className="flex flex-col">
+        <h1 className="text-2xl font-bold mb-6">Settings</h1>
         {/* Sidebar */}
-        <aside className="w-72 border-r border-[#2e2e40] bg-[#252836] p-6 space-y-4 rounded-lg">
+        <aside className="w-72 bg-[#252836] p-6 space-y-4  ">
           {sidebarItems.map((item) => (
-            <Button
+            <button
               key={item.label}
-              variant="ghost"
               onClick={() => setActiveTab(item.label)}
               className={cn(
-                "w-full justify-start gap-2 rounded-lg hover:bg-[#ff6b5c]/20",
-                activeTab === item.label && "bg-[#ff6b5c] text-white"
+                "w-full flex background-none items-center gap-4 p-3 rounded-lg transition-all duration-200 hover:text-white",
+               activeTab === item.label ? "bg-[#333347] text-white" : "text-gray-400 hover:bg-[#333347] hover:text-white"
               )}
             >
-              <item.icon size={18} />
-              {item.label}
-            </Button>
+              <item.icon
+                size={20}
+                className={cn(
+                  activeTab === item.label ? "text-white" : "text-gray-400"
+                )}
+              />
+              <div className="flex flex-col items-start">
+                <span
+                  className={cn(
+                    "font-medium",
+                    activeTab === item.label ? "text-white" : "text-gray-300"
+                  )}
+                >
+                  {item.label}
+                </span>
+                <span className="text-xs text-gray-500">
+                  {item.description}
+                </span>
+              </div>
+            </button>
           ))}
         </aside>
-
-        {/* Main content */}
-        <main className="flex-1 p-8 overflow-y-auto">
-          {activeTab === "Appearance" && (
-            <Card className="bg-[#2A2A3C] text-white shadow-md max-w-3xl">
-              <CardHeader>
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <Moon size={20} /> Appearance Settings
-                </CardTitle>
-              </CardHeader>
-
-              <CardContent className="space-y-6">
-                <div className="flex items-center justify-between">
-                  <Label>🌙 Dark Mode</Label>
-                  <Switch
-                    checked={darkMode}
-                    onCheckedChange={(v) => setDarkMode(v)}
-                  />
-                </div>
-
-                <div>
-                  <Label className="block mb-2">🌐 Language</Label>
-                  <Select
-                    value={language}
-                    onValueChange={(val) => setLanguage(val)}
-                  >
-                    <SelectTrigger className="bg-white text-black w-full">
-                      <SelectValue placeholder="Select Language" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="vi">🇻🇳 Vietnamese</SelectItem>
-                      <SelectItem value="en">🇺🇸 English</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="pt-4 text-right">
-                  <Button className="bg-[#ff6b5c] hover:bg-[#ff8575]">
-                    Save Changes
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {activeTab !== "Appearance" && (
-            <div className="text-lg text-gray-400 mt-6">
-              Chưa có nội dung 😅
-            </div>
-          )}
-        </main>
       </div>
+
+      {/* Main Content */}
+      <main className="flex-1 p-8 overflow-y-auto">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold">{activeTab}</h2>
+          {activeTab === "Products Management" && (
+            <Button className="bg-[#ff6b5c] text-white px-4 py-2 rounded-lg">
+              Manage Categories
+            </Button>
+          )}
+        </div>
+        <div className="mt-6">
+          {activeTab === "Appearance" && (
+            <div>Dark and Light mode settings go here...</div>
+          )}
+          {activeTab === "Your Restaurant" && (
+            <div>Your restaurant settings go here...</div>
+          )}
+          {activeTab === "Products Management" && <FoodManagementPage />}
+          {activeTab === "Notifications" && (
+            <div>Notification settings go here...</div>
+          )}
+          {activeTab === "Security" && <div>Security settings go here...</div>}
+          {activeTab === "About Us" && (
+            <div>Information about us goes here...</div>
+          )}
+        </div>
+      </main>
     </div>
   );
 }

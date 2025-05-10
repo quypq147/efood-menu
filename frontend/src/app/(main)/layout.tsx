@@ -20,15 +20,15 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={cn(inter.className , 'bg-background text-foreground')}>
+      <body >
         <div className="flex">
           {/* Sidebar cố định */}
-          <div className="fixed top-0 left-0 h-screen  z-50">
+          <div className="fixed top-0 left-0 h-screen z-50">
             <FoodSidebar />
           </div>
 
           {/* Nội dung chính với margin-left để tránh đè lên sidebar */}
-          <main className="ml-[64] w-full overflow-y-auto h-screen bg-[#393C49] scroll-smooth">
+          <main className="ml-[63] w-full overflow-y-auto h-screen bg-[#393C49] scroll-smooth">
             {children}
           </main>
         </div>
