@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import FoodCard from '@/components/food-card';
 import FoodEditPage from '@/components/FoodEditPage';
-import AddFoodPage from '@/components/AddFoodPage';
+import AddFoodPage from '@/components/AddFoodPage';import axios from 'axios';
 
 export default function FoodManagementPage() {
   const [food, setFood] = useState([
