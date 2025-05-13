@@ -15,34 +15,34 @@ import { Button } from "@/components/ui/button";
 
 const sidebarItems = [
   {
-    label: "Appearance",
+    label: "Giao diện",
     icon: Moon,
-    description: "Dark and Light mode, Font size",
+    description: "Tuỳ chỉnh giao diện của bạn", 
   },
   {
-    label: "Your Restaurant",
+    label: "Nhà hàng của bạn",
     icon: LayoutDashboard,
-    description: "Manage your restaurant settings",
+    description: "Tuỳ chỉnh cài đặt nhà hàng của bạn",
   },
   {
-    label: "Products Management",
+    label: "Quản lý sản phẩm",
     icon: Globe2,
-    description: "Manage your product, pricing, etc",
+    description: "Tuỳ chỉnh sản phẩm, giá cả, v.v.",
   },
   {
-    label: "Notifications",
+    label: "Thông báo",
     icon: Bell,
-    description: "Customize your notifications",
+    description: "Tuỳ chỉnh thông báo của bạn",
   },
   {
-    label: "Security",
+    label: "Bảo mật",
     icon: ShieldCheck,
-    description: "Configure Password, PIN, etc",
+    description: "Tuỳ chỉnh mật khẩu, PIN, v.v.",
   },
   {
-    label: "About Us",
+    label: "Về chúng tôi",
     icon: Info,
-    description: "Find out more about Posly",
+    description: "Tìm hiểu thêm về chúng tôi",
   },
 ];
 
@@ -53,7 +53,7 @@ export default function SettingsPage() {
     <div className="flex ml-10 h-screen text-white">
       {/* Header */}
       <div className="flex flex-col">
-        <h1 className="text-2xl font-bold mb-6">Settings</h1>
+        <h1 className="text-2xl font-bold mb-6">Cài Đặt</h1>
         {/* Sidebar */}
         <aside className="w-72 bg-[#252836] p-6 space-y-4  ">
           {sidebarItems.map((item) => (
@@ -92,10 +92,9 @@ export default function SettingsPage() {
       {/* Main Content */}
       <main className="flex-1 p-8 overflow-y-auto">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold">{activeTab}</h2>
           {activeTab === "Products Management" && (
             <Button className="bg-[#ff6b5c] text-white px-4 py-2 rounded-lg">
-              Manage Categories
+              Quản lý loại món ăn
             </Button>
           )}
         </div>
@@ -106,7 +105,8 @@ export default function SettingsPage() {
           {activeTab === "Your Restaurant" && (
             <div>Your restaurant settings go here...</div>
           )}
-          {activeTab === "Products Management" && <FoodManagementPage />}
+          {activeTab === "Quản lý sản phẩm" && <FoodManagementPage />}
+          
           {activeTab === "Notifications" && (
             <div>Notification settings go here...</div>
           )}

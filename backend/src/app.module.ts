@@ -13,6 +13,7 @@ import { RolePermissionsController } from './role-permissions/role-permissions.c
 import { FoodModule } from './food/food.module';
 import { OrderModule } from './order/order.module';
 import { OrderItemModule } from './order-item/order-item.module';
+import { CategoryModule } from './category/category.module';
 
 @Module({
   imports: [
@@ -23,7 +24,8 @@ import { OrderItemModule } from './order-item/order-item.module';
     PermissionModule,
     FoodModule,
     OrderModule,
-    OrderItemModule, // ✅ Import module, không cần re-provide
+    OrderItemModule,
+    CategoryModule, // ✅ Import module, không cần re-provide
   ],
   controllers: [AppController, PermissionController, RolePermissionsController],
   providers: [AppService, PermissonsService , PrismaService], 

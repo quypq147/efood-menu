@@ -1,97 +1,149 @@
 'use client';
 
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
+import { useState, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
+import { useDropzone } from 'react-dropzone';
+import { getCategories } from '@/api/category'; // Import API để lấy danh mục
 
-export default function AddFoodPage({ onSave, onCancel }) {
-  const [name, setName] = useState('');
-  const [price, setPrice] = useState('');
-  const [quantity, setQuantity] = useState('');
-  const [image, setImage] = useState('');
-  const [description, setDescription] = useState('');
+export default function AddFoodPage({ onSave, onCancel, initialData = null }) {
+  const [name, setName] = useState(initialData?.name || '');
+  const [price, setPrice] = useState(initialData?.price || '');
+  const [quantity, setQuantity] = useState(initialData?.quantity || '');
+  const [image, setImage] = useState(
+    initialData?.image
+      ? { preview: initialData.image }
+      : null
+  );
+  const [description, setDescription] = useState(initialData?.description || '');
+  const [categoryId, setCategoryId] = useState(initialData?.categoryId || ''); // Thêm state cho danh mục
+  const [categories, setCategories] = useState([]); // Danh sách danh mục
+
+  // Lấy danh sách danh mục từ backend
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const data = await getCategories();
+        setCategories(data);
+      } catch (error) {
+        console.error('Lỗi khi lấy danh sách danh mục:', error);
+      }
+    };
+    fetchCategories();
+  }, []);
+
+  const onDrop = (acceptedFiles) => {
+    const file = acceptedFiles[0];
+    setImage(Object.assign(file, { preview: URL.createObjectURL(file) }));
+  };
+
+  const { getRootProps, getInputProps } = useDropzone({
+    onDrop,
+    accept: 'image/*',
+    maxFiles: 1,
+  });
 
   const handleSave = () => {
-    const newFood = { name, price, quantity, image, description };
+    if (!name || !price || !quantity || !image || !categoryId) {
+      alert('Vui lòng điền đầy đủ thông tin và chọn danh mục.');
+      return;
+    }
+
+    const newFood = {
+      id: initialData?.id || Date.now(),
+      name,
+      price: parseFloat(price),
+      quantity: parseInt(quantity, 10),
+      image: image.preview || image,
+      description,
+      categoryId, // Gửi categoryId
+    };
+
     onSave(newFood);
   };
 
   return (
-    <div className="p-6 bg-[#252836] text-white rounded-lg shadow-lg max-w-lg mx-auto">
-      <h2 className="text-2xl font-bold mb-4">Add New Dish</h2>
-
-      {/* Name */}
-      <div className="mb-4">
-        <Label htmlFor="name">Dish Name</Label>
+    <div className="space-y-4">
+      <div>
+        <Label htmlFor="name">Tên món ăn</Label>
         <Input
           id="name"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          placeholder="Enter dish name"
-          className="mt-2"
+          placeholder="Nhập tên món ăn"
         />
       </div>
-
-      {/* Price */}
-      <div className="mb-4">
-        <Label htmlFor="price">Price ($)</Label>
+      <div>
+        <Label htmlFor="price">Giá</Label>
         <Input
           id="price"
           type="number"
           value={price}
           onChange={(e) => setPrice(e.target.value)}
-          placeholder="Enter price"
-          className="mt-2"
+          placeholder="Nhập giá"
         />
       </div>
-
-      {/* Quantity */}
-      <div className="mb-4">
-        <Label htmlFor="quantity">Quantity</Label>
+      <div>
+        <Label htmlFor="quantity">Số lượng</Label>
         <Input
           id="quantity"
           type="number"
           value={quantity}
           onChange={(e) => setQuantity(e.target.value)}
-          placeholder="Enter quantity"
-          className="mt-2"
+          placeholder="Nhập số lượng tô"
         />
       </div>
-
-      {/* Image */}
-      <div className="mb-4">
-        <Label htmlFor="image">Image URL</Label>
+      <div>
+        <Label htmlFor="category">Danh mục</Label>
+        <select
+          id="category"
+          value={categoryId}
+          onChange={(e) => setCategoryId(e.target.value)}
+          className="w-full p-2 rounded-lg text-black "
+        >
+          <option className='text-black' value="" disabled>
+            Chọn danh mục
+          </option>
+          {categories.map((category) => (
+            <option className='text-black' key={category.id} value={category.id}>
+              {category.name}
+            </option>
+          ))}
+        </select>
+      </div>
+      <div>
+        <Label>Ảnh món ăn</Label>
+        <div
+          {...getRootProps()}
+          className="border-dashed border-2 border-gray-400 rounded-lg p-4 mt-2 cursor-pointer hover:bg-[#333347]"
+        >
+          <input {...getInputProps()} />
+          {image ? (
+            <img
+              src={image.preview}
+              alt="Preview"
+              className="w-full h-32 object-cover rounded-lg"
+            />
+          ) : (
+            <p className="text-gray-400">Kéo thả hoặc nhấn để tải ảnh lên</p>
+          )}
+        </div>
+      </div>
+      <div>
+        <Label htmlFor="description">Mô tả</Label>
         <Input
-          id="image"
-          value={image}
-          onChange={(e) => setImage(e.target.value)}
-          placeholder="Enter image URL"
-          className="mt-2"
-        />
-      </div>
-
-      {/* Description */}
-      <div className="mb-4">
-        <Label htmlFor="description">Description</Label>
-        <Textarea
           id="description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          placeholder="Enter dish description"
-          className="mt-2"
+          placeholder="Nhập mô tả món ăn"
         />
       </div>
-
-      {/* Actions */}
       <div className="flex justify-end gap-4">
-        <Button variant="outline" onClick={onCancel} className="border-gray-400 text-gray-400">
-          Cancel
+        <Button variant="outline" onClick={onCancel}>
+          Hủy
         </Button>
-        <Button onClick={handleSave} className="bg-[#ff6b5c] hover:bg-[#ff8575]">
-          Add Dish
-        </Button>
+        <Button onClick={handleSave}>Lưu</Button>
       </div>
     </div>
   );
