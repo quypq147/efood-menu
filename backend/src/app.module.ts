@@ -14,6 +14,7 @@ import { FoodModule } from './food/food.module';
 import { OrderModule } from './order/order.module';
 import { OrderItemModule } from './order-item/order-item.module';
 import { CategoryModule } from './category/category.module';
+import { UploadController } from './uploads/uploads.controller';
 
 @Module({
   imports: [
@@ -27,7 +28,7 @@ import { CategoryModule } from './category/category.module';
     OrderItemModule,
     CategoryModule, // ✅ Import module, không cần re-provide
   ],
-  controllers: [AppController, PermissionController, RolePermissionsController],
+  controllers: [AppController, PermissionController, RolePermissionsController, UploadController],
   providers: [AppService, PermissonsService , PrismaService], 
 })
 export class AppModule {}

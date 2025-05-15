@@ -86,7 +86,7 @@ export default function FoodManagementPage() {
   const filteredFood = activeCategory
     ? food.filter((item) => item.categoryId === activeCategory)
     : food; // Hiển thị tất cả món nếu activeCategory là null
-
+  console.log("filteredFood", filteredFood);
   // Hiển thị trang quản lý loại món nếu `showCategoryManagement` là true
   if (showCategoryManagement) {
     return (
@@ -114,11 +114,10 @@ export default function FoodManagementPage() {
           <button
             key={category.id || "all"}
             onClick={() => setActiveCategory(category.id)}
-            className={`pb-2 ${
-              activeCategory === category.id
+            className={`pb-2 ${activeCategory === category.id
                 ? "text-white border-b-2 border-[#ff6b5c]"
                 : "text-gray-400"
-            }`}
+              }`}
           >
             {category.name}
           </button>
@@ -141,7 +140,7 @@ export default function FoodManagementPage() {
         {/* Nút thêm món ăn */}
         <Dialog>
           <DialogTrigger asChild>
-            <div className="border-dashed border-2 border-gray-400 rounded-lg flex items-center justify-center text-gray-400 cursor-pointer hover:bg-[#333347] h-84">
+            <div className="border-dashed border-2 border-gray-400 rounded-lg flex items-center justify-center text-gray-400  hover:bg-[#333347] h-84">
               + Thêm món ăn
             </div>
           </DialogTrigger>

@@ -4,16 +4,18 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { useUserStore } from '@/store/userStore';
 
-export default function FoodCard({ image, name, price, quantity }) {
+export default function FoodCard({ image, name, price, quantity , onEdit }) {
   const { user } = useUserStore(); // Lấy thông tin người dùng từ store
-
+  
   const isEditable = user?.roleName === 'Admin' || user?.roleName === 'Nhân viên'; // Kiểm tra quyền
 
+  
+
   return (
-    <Card className="bg-[#2a2a3c] text-white hover:shadow-lg hover:bg-[#333347] transition-all cursor-pointer border-0">
+    <Card className="bg-[#2a2a3c] text-white hover:shadow-lg hover:bg-[#333347] transition-all  border-0">
       <CardHeader className="p-0">
         <img
-          src={image}
+          src={`http://localhost:30${image.startsWith('/') ? image : `/uploads/${image}`}`}
           alt={name}
           className="w-full h-32 object-cover rounded-t-lg"
         />
@@ -26,11 +28,12 @@ export default function FoodCard({ image, name, price, quantity }) {
       </CardContent>
       <CardFooter className="p-4">
         {isEditable ? (
-          <Button className="w-full bg-[#ff6b5c] hover:bg-[#ff8575]">
+          <Button className="w-full cursor-pointer bg-[#ff6b5c] hover:bg-[#ff8575]"
+          onClick={onEdit}>
             Chỉnh sửa món ăn
           </Button>
         ) : (
-          <p className="text-sm text-gray-400">Còn lại: {new Intl.NumberFormat('vi-VN').format(quantity)} bát</p>
+          <p className="text-sm text-gray-400">Còn lại: {new Intl.NumberFormat('vi-VN').format(quantity)} </p>
         )}
       </CardFooter>
     </Card>

@@ -10,6 +10,7 @@ export default function FoodListPage({ onAddToCart }) {
   const [categories, setCategories] = useState([]); // Danh sách danh mục
   const [foods, setFoods] = useState([]); // Danh sách món ăn
   const [filteredFoods, setFilteredFoods] = useState([]); // Danh sách món ăn đã lọc
+
   // Lấy danh sách món ăn và danh mục từ backend
   useEffect(() => {
     const fetchData = async () => {
@@ -19,8 +20,8 @@ export default function FoodListPage({ onAddToCart }) {
           getCategories(),
         ]);
         setFoods(foodData);
-        setCategories(categoryData);
-        setActiveCategory(categoryData[0]?.id || null); // Chọn danh mục đầu tiên
+        setCategories([{ id: null, name: "Tất cả" }, ...categoryData]); // Thêm tab "Tất cả"
+        setActiveCategory(null); // Mặc định chọn "Tất cả"
       } catch (error) {
         console.error("Lỗi khi lấy dữ liệu:", error);
       }
@@ -35,7 +36,7 @@ export default function FoodListPage({ onAddToCart }) {
         foods.filter((food) => food.categoryId === activeCategory)
       );
     } else {
-      setFilteredFoods(foods);
+      setFilteredFoods(foods); // Hiển thị tất cả món ăn nếu activeCategory là null
     }
   }, [activeCategory, foods]);
 
@@ -45,18 +46,24 @@ export default function FoodListPage({ onAddToCart }) {
   };
 
   return (
-    <div className="text-white ">
+    <div className="text-white min-h-screen">
       {/* Header */}
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold">Jaegar Resto</h1>
+        <p className="text-gray-400">Tuesday, 2 Feb 2021</p>
+      </div>
+
       {/* Danh mục */}
-      <div className="flex space-x-4 mb-6">
+      <div className="flex space-x-4 mb-6 overflow-x-auto scrollbar-hide">
         {categories.map((category) => (
           <button
-            key={category.id}
+            key={category.id || "all"}
             onClick={() => setActiveCategory(category.id)}
-            className={`px-4 py-2 rounded-lg ${activeCategory === category.id
-              ? "bg-[#ff6b5c] text-white"
-              : "bg-[#2a2a3c] text-gray-400 hover:bg-[#333347]"
-              }`}
+            className={`px-4 py-2 rounded-lg ${
+              activeCategory === category.id
+                ? "bg-[#ff6b5c] text-white"
+                : "bg-[#2a2a3c] text-gray-400 hover:bg-[#333347]"
+            }`}
           >
             {category.name}
           </button>

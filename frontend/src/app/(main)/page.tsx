@@ -6,7 +6,6 @@ import OrderPage from '@/components/OrderPage';
 
 export default function HomePage() {
   const [cart, setCart] = useState([]);
-  const [isOrdering, setIsOrdering] = useState(false);
 
   const handleAddToCart = (food) => {
     const existingItem = cart.find((item) => item.id === food.id);
@@ -19,7 +18,6 @@ export default function HomePage() {
     } else {
       setCart([...cart, { ...food, quantity: 1 }]);
     }
-    setIsOrdering(true); // Chuyển sang trang đặt hàng
   };
 
   const handleUpdateCart = (id, quantity) => {
@@ -33,21 +31,24 @@ export default function HomePage() {
   const handleCheckout = () => {
     alert('Proceeding to payment...');
     setCart([]);
-    setIsOrdering(false);
   };
 
   return (
-    <main className="flex min-h-screen flex-col  justify-between p-10">
-      {isOrdering ? (
-        <OrderPage
-          cart={cart}
-          onUpdateCart={handleUpdateCart}
-          onRemoveItem={handleRemoveItem}
-          onCheckout={handleCheckout}
-        />
-      ) : (
-        <FoodListPage onAddToCart={handleAddToCart} />
-      )}
-    </main>
+    <div className="flex h-screen">
+      {/* Nội dung chính */}
+      <div className="flex-1 flex">
+        <div className="flex-1 p-10 overflow-y-auto scrollbar-hide">
+          <FoodListPage onAddToCart={handleAddToCart} />
+        </div>
+        <div className="w-[400px] bg-[#232336] h-screen overflow-y-auto scrollbar-hide">
+          <OrderPage
+            cart={cart}
+            onUpdateCart={handleUpdateCart}
+            onRemoveItem={handleRemoveItem}
+            onCheckout={handleCheckout}
+          />
+        </div>
+      </div>
+    </div>
   );
 }

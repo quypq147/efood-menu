@@ -6,6 +6,8 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { useDropzone } from 'react-dropzone';
 import { getCategories } from '@/api/category'; // Import API để lấy danh mục
+import { uploadImage } from '@/api/upload'; // Import hàm uploadImage
+import { axiosInstance } from '@/lib/axios'; // Import axiosInstance
 
 export default function AddFoodPage({ onSave, onCancel, initialData = null }) {
   const [name, setName] = useState(initialData?.name || '');
@@ -44,10 +46,23 @@ export default function AddFoodPage({ onSave, onCancel, initialData = null }) {
     maxFiles: 1,
   });
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!name || !price || !quantity || !image || !categoryId) {
       alert('Vui lòng điền đầy đủ thông tin và chọn danh mục.');
       return;
+    }
+
+    let imageUrl = image.preview || image;
+
+    // Tải lên hình ảnh nếu là blob URL
+    if (image && image.preview) {
+      try {
+        imageUrl = await uploadImage(image, name); // Gửi tên món ăn cùng với hình ảnh
+      } catch (error) {
+        console.error('Lỗi khi tải lên hình ảnh:', error);
+        alert('Đã xảy ra lỗi khi tải lên hình ảnh. Vui lòng thử lại.');
+        return;
+      }
     }
 
     const newFood = {
@@ -55,12 +70,21 @@ export default function AddFoodPage({ onSave, onCancel, initialData = null }) {
       name,
       price: parseFloat(price),
       quantity: parseInt(quantity, 10),
-      image: image.preview || image,
+      image: imageUrl, // URL hình ảnh đã tải lên
       description,
-      categoryId, // Gửi categoryId
+      categoryId: parseInt(categoryId, 10),
     };
 
-    onSave(newFood);
+    console.log('Dữ liệu gửi đến API:', newFood);
+
+    try {
+      const response = await axiosInstance.post('/food', newFood); // Sử dụng axiosInstance
+      console.log('Phản hồi từ API:', response.data);
+      onSave(response.data);
+    } catch (error) {
+      console.error('Lỗi khi thêm món ăn:', error);
+      alert('Đã xảy ra lỗi khi thêm món ăn. Vui lòng thử lại.');
+    }
   };
 
   return (
@@ -102,11 +126,11 @@ export default function AddFoodPage({ onSave, onCancel, initialData = null }) {
           onChange={(e) => setCategoryId(e.target.value)}
           className="w-full p-2 rounded-lg text-black "
         >
-          <option className='text-black' value="" disabled>
+          <option className="text-black" value="" disabled>
             Chọn danh mục
           </option>
           {categories.map((category) => (
-            <option className='text-black' key={category.id} value={category.id}>
+            <option className="text-black" key={category.id} value={category.id}>
               {category.name}
             </option>
           ))}
