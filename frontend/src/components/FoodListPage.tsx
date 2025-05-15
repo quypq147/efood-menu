@@ -4,12 +4,14 @@ import { useState, useEffect } from "react";
 import FoodCard from "@/components/food-card";
 import { getFoods } from "@/api/food"; // Import API lấy danh sách món ăn
 import { getCategories } from "@/api/category"; // Import API lấy danh sách danh mục
+import { useUserStore } from '@/store/userStore';
 
 export default function FoodListPage({ onAddToCart }) {
   const [activeCategory, setActiveCategory] = useState(null); // Danh mục đang được chọn
   const [categories, setCategories] = useState([]); // Danh sách danh mục
   const [foods, setFoods] = useState([]); // Danh sách món ăn
   const [filteredFoods, setFilteredFoods] = useState([]); // Danh sách món ăn đã lọc
+  const user = useUserStore((state) => state.user); // Lấy thông tin người dùng từ store
 
   // Lấy danh sách món ăn và danh mục từ backend
   useEffect(() => {
@@ -49,10 +51,19 @@ export default function FoodListPage({ onAddToCart }) {
     <div className="text-white min-h-screen">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-3xl font-bold">Jaegar Resto</h1>
-        <p className="text-gray-400">Tuesday, 2 Feb 2021</p>
+        <h1 className="text-3xl font-bold">Xin chào , {user.fullname}</h1>
+        <p>
+          {new Date().toLocaleString("vi-VN", {
+            timeZone: "Asia/Ho_Chi_Minh",
+            weekday: "long",
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit"
+          })}
+        </p>
       </div>
-
       {/* Danh mục */}
       <div className="flex space-x-4 mb-6 overflow-x-auto scrollbar-hide">
         {categories.map((category) => (

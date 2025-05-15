@@ -14,10 +14,10 @@ export default function OrderPage({ cart, onUpdateCart, onRemoveItem, onCheckout
         <table className="w-full text-left text-sm">
           <thead>
             <tr className="text-gray-400">
-              <th className="py-2">Item</th>
-              <th className="py-2">Qty</th>
-              <th className="py-2">Price</th>
-              <th className="py-2">Actions</th>
+              <th className="py-2">Tên món</th>
+              <th className="py-2">Số lượng</th>
+              <th className="py-2">Giá</th>
+              <th className="py-2">Hành động</th>
             </tr>
           </thead>
           <tbody>
@@ -38,7 +38,7 @@ export default function OrderPage({ cart, onUpdateCart, onRemoveItem, onCheckout
                     onClick={() => onRemoveItem(item.id)}
                     className="text-red-500 hover:underline"
                   >
-                    Remove
+                    Gỡ bỏ
                   </button>
                 </td>
               </tr>
@@ -49,12 +49,12 @@ export default function OrderPage({ cart, onUpdateCart, onRemoveItem, onCheckout
 
       {/* Tổng tiền */}
       <div className="flex justify-between items-center mb-6">
-        <p className="text-lg font-bold">Total: ${calculateTotal()}</p>
+        <p className="text-lg font-bold">Tổng cộng: {Number(calculateTotal()).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</p>
         <button
           onClick={onCheckout}
           className="px-4 py-2 bg-[#ff6b5c] text-white rounded-lg"
         >
-          Continue to Payment
+          Tiếp đến thanh toán
         </button>
       </div>
     </div>

@@ -20,11 +20,6 @@ const sidebarItems = [
     description: "Tuỳ chỉnh giao diện của bạn", 
   },
   {
-    label: "Nhà hàng của bạn",
-    icon: LayoutDashboard,
-    description: "Tuỳ chỉnh cài đặt nhà hàng của bạn",
-  },
-  {
     label: "Quản lý sản phẩm",
     icon: Globe2,
     description: "Tuỳ chỉnh sản phẩm, giá cả, v.v.",
@@ -33,11 +28,6 @@ const sidebarItems = [
     label: "Thông báo",
     icon: Bell,
     description: "Tuỳ chỉnh thông báo của bạn",
-  },
-  {
-    label: "Bảo mật",
-    icon: ShieldCheck,
-    description: "Tuỳ chỉnh mật khẩu, PIN, v.v.",
   },
   {
     label: "Về chúng tôi",
@@ -102,15 +92,11 @@ export default function SettingsPage() {
           {activeTab === "Appearance" && (
             <div>Dark and Light mode settings go here...</div>
           )}
-          {activeTab === "Your Restaurant" && (
-            <div>Your restaurant settings go here...</div>
-          )}
           {activeTab === "Quản lý sản phẩm" && <FoodManagementPage />}
           
           {activeTab === "Notifications" && (
             <div>Notification settings go here...</div>
           )}
-          {activeTab === "Security" && <div>Security settings go here...</div>}
           {activeTab === "About Us" && (
             <div>Information about us goes here...</div>
           )}
