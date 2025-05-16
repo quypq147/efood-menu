@@ -40,7 +40,7 @@ export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState();
 
   return (
-    <div className="flex ml-10 h-screen text-white">
+    <div className="flex p-5 ml-10 h-screen text-white">
       {/* Header */}
       <div className="flex flex-col">
         <h1 className="text-2xl font-bold mb-6">Cài Đặt</h1>

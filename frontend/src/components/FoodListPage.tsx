@@ -2,18 +2,18 @@
 
 import { useState, useEffect } from "react";
 import FoodCard from "@/components/food-card";
-import { getFoods } from "@/api/food"; // Import API lấy danh sách món ăn
-import { getCategories } from "@/api/category"; // Import API lấy danh sách danh mục
+import { getFoods } from "@/api/food";
+import { getCategories } from "@/api/category";
 import { useUserStore } from '@/store/userStore';
 
 export default function FoodListPage({ onAddToCart }) {
-  const [activeCategory, setActiveCategory] = useState(null); // Danh mục đang được chọn
-  const [categories, setCategories] = useState([]); // Danh sách danh mục
-  const [foods, setFoods] = useState([]); // Danh sách món ăn
-  const [filteredFoods, setFilteredFoods] = useState([]); // Danh sách món ăn đã lọc
-  const user = useUserStore((state) => state.user); // Lấy thông tin người dùng từ store
+  const [activeCategory, setActiveCategory] = useState(null);
+  const [categories, setCategories] = useState([]);
+  const [foods, setFoods] = useState([]);
+  const [filteredFoods, setFilteredFoods] = useState([]);
+  const [now, setNow] = useState("");
+  const user = useUserStore((state) => state.user);
 
-  // Lấy danh sách món ăn và danh mục từ backend
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -22,46 +22,46 @@ export default function FoodListPage({ onAddToCart }) {
           getCategories(),
         ]);
         setFoods(foodData);
-        setCategories([{ id: null, name: "Tất cả" }, ...categoryData]); // Thêm tab "Tất cả"
-        setActiveCategory(null); // Mặc định chọn "Tất cả"
+        setCategories([{ id: null, name: "Tất cả" }, ...categoryData]);
+        setActiveCategory(null);
       } catch (error) {
         console.error("Lỗi khi lấy dữ liệu:", error);
       }
     };
     fetchData();
   }, []);
-
-  // Lọc món ăn theo danh mục
+  useEffect(() => {
+    setNow(
+      new Date().toLocaleString("vi-VN", {
+        timeZone: "Asia/Ho_Chi_Minh",
+        weekday: "long",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit"
+      })
+    );
+  }, []);
   useEffect(() => {
     if (activeCategory) {
       setFilteredFoods(
         foods.filter((food) => food.categoryId === activeCategory)
       );
     } else {
-      setFilteredFoods(foods); // Hiển thị tất cả món ăn nếu activeCategory là null
+      setFilteredFoods(foods);
     }
   }, [activeCategory, foods]);
-
-  const handleRightClick = (e, food) => {
-    e.preventDefault(); // Ngăn menu chuột phải mặc định
-    onAddToCart(food); // Gọi hàm thêm món vào giỏ hàng
-  };
 
   return (
     <div className="text-white min-h-screen">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-3xl font-bold">Xin chào , {user.fullname}</h1>
+        <h1 className="text-3xl font-bold">
+          Xin chào{user?.fullname ? `, ${user.fullname}` : " Khách hàng"}!
+        </h1>
         <p>
-          {new Date().toLocaleString("vi-VN", {
-            timeZone: "Asia/Ho_Chi_Minh",
-            weekday: "long",
-            year: "numeric",
-            month: "2-digit",
-            day: "2-digit",
-            hour: "2-digit",
-            minute: "2-digit"
-          })}
+          {now}
         </p>
       </div>
       {/* Danh mục */}
@@ -70,11 +70,10 @@ export default function FoodListPage({ onAddToCart }) {
           <button
             key={category.id || "all"}
             onClick={() => setActiveCategory(category.id)}
-            className={`px-4 py-2 rounded-lg ${
-              activeCategory === category.id
+            className={`px-4 py-2 rounded-lg ${activeCategory === category.id
                 ? "bg-[#ff6b5c] text-white"
                 : "bg-[#2a2a3c] text-gray-400 hover:bg-[#333347]"
-            }`}
+              }`}
           >
             {category.name}
           </button>
@@ -85,7 +84,7 @@ export default function FoodListPage({ onAddToCart }) {
       <h2 className="text-xl font-bold mb-4">Chọn món</h2>
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {filteredFoods.map((food) => (
-          <div key={food.id} onContextMenu={(e) => handleRightClick(e, food)}>
+          <div key={food.id} onClick={() => onAddToCart(food)} className="cursor-pointer">
             <FoodCard
               image={food.image}
               name={food.name}
