@@ -3,28 +3,28 @@
 import { useState, useEffect } from "react";
 import FoodCard from "@/components/food-card";
 import AddFoodPage from "@/components/AddFoodPage";
-import FoodEditPage from "@/components/FoodEditPage"; // Import trang chỉnh sửa món ăn
-import CategoryManagement from "@/components/categoryManagerment"; // Import trang quản lý loại món
+import FoodEditPage from "@/components/FoodEditPage";
+import CategoryManagement from "@/components/categoryManagerment";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { getFoods, addFood, updateFood } from "@/api/food";
 import { getCategories } from "@/api/category";
 
 export default function FoodManagementPage() {
-  const [food, setFood] = useState([]); // Danh sách món ăn
-  const [categories, setCategories] = useState([]); // Danh sách danh mục
-  const [activeCategory, setActiveCategory] = useState(null); // Danh mục đang được chọn
-  const [editingFood, setEditingFood] = useState(null); // Món ăn đang chỉnh sửa
-  const [originalFood, setOriginalFood] = useState([]); // Lưu trạng thái ban đầu để hủy thay đổi
-  const [showCategoryManagement, setShowCategoryManagement] = useState(false); // Hiển thị trang quản lý loại món
+  const [food, setFood] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [activeCategory, setActiveCategory] = useState(null);
+  const [editingFood, setEditingFood] = useState(null);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [originalFood, setOriginalFood] = useState([]);
+  const [showCategoryManagement, setShowCategoryManagement] = useState(false);
 
-  // Lấy danh sách món ăn và danh mục từ backend khi trang được tải
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -33,9 +33,9 @@ export default function FoodManagementPage() {
           getCategories(),
         ]);
         setFood(foods);
-        setCategories([{ id: null, name: "Tất cả" }, ...categories]); // Thêm tab "Tất cả"
-        setOriginalFood(foods); // Lưu trạng thái ban đầu
-        setActiveCategory(null); // Mặc định chọn "Tất cả"
+        setCategories([{ id: null, name: "Tất cả" }, ...categories]);
+        setOriginalFood(foods);
+        setActiveCategory(null);
       } catch (error) {
         console.error("Lỗi khi lấy dữ liệu:", error);
       }
@@ -43,13 +43,11 @@ export default function FoodManagementPage() {
     fetchData();
   }, []);
 
-  // Thêm món ăn mới
   const handleAddFood = async (newFood) => {
     if (!newFood.categoryId) {
       alert("Vui lòng chọn danh mục trước khi thêm món ăn.");
       return;
     }
-
     try {
       const addedFood = await addFood(newFood);
       setFood((prevFoods) => [...prevFoods, addedFood]);
@@ -58,40 +56,36 @@ export default function FoodManagementPage() {
     }
   };
 
-  // Cập nhật món ăn
   const handleSaveEdit = async (updatedFood) => {
     try {
       const savedFood = await updateFood(updatedFood.id, updatedFood);
       setFood((prevFoods) =>
         prevFoods.map((food) => (food.id === updatedFood.id ? savedFood : food))
       );
-      setEditingFood(null); // Đóng modal chỉnh sửa
+      setEditingFood(null);
+      setShowEditModal(false);
     } catch (error) {
       console.error("Lỗi khi cập nhật món ăn:", error);
     }
   };
 
-  // Hủy thay đổi
   const handleDiscardChanges = () => {
-    setFood([...originalFood]); // Khôi phục trạng thái ban đầu
+    setFood([...originalFood]);
   };
 
-  // Lưu thay đổi
   const handleSaveChanges = () => {
-    setOriginalFood([...food]); // Lưu trạng thái hiện tại
+    setOriginalFood([...food]);
     alert("Đã lưu thay đổi!");
   };
 
-  // Lọc món ăn theo danh mục
   const filteredFood = activeCategory
     ? food.filter((item) => item.categoryId === activeCategory)
-    : food; // Hiển thị tất cả món nếu activeCategory là null
-  console.log("filteredFood", filteredFood);
-  // Hiển thị trang quản lý loại món nếu `showCategoryManagement` là true
+    : food;
+
   if (showCategoryManagement) {
     return (
       <CategoryManagement
-        onClose={() => setShowCategoryManagement(false)} // Đóng trang quản lý loại món
+        onGoToFood={() => setShowCategoryManagement(false)}
       />
     );
   }
@@ -102,7 +96,7 @@ export default function FoodManagementPage() {
         <h1 className="text-2xl font-bold">Quản lý món ăn</h1>
         <Button
           className="bg-[#ff6b5c] text-white px-4 py-2 rounded-lg"
-          onClick={() => setShowCategoryManagement(true)} // Hiển thị trang quản lý loại món
+          onClick={() => setShowCategoryManagement(true)}
         >
           Quản lý loại món ăn
         </Button>
@@ -133,38 +127,55 @@ export default function FoodManagementPage() {
             name={food.name}
             price={food.price}
             quantity={food.quantity}
-            onEdit={() => setEditingFood(food)} // Mở modal chỉnh sửa
+            onEdit={() => {
+              setEditingFood(food);
+              setShowEditModal(true);
+            }}
           />
         ))}
 
         {/* Nút thêm món ăn */}
-        <Dialog>
-          <DialogTrigger asChild>
-            <div className="border-dashed border-2 border-gray-400 rounded-lg flex items-center justify-center text-gray-400  hover:bg-[#333347] h-84">
-              + Thêm món ăn
-            </div>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>
-                {editingFood ? "Sửa món ăn" : "Thêm món ăn"}
-              </DialogTitle>
-            </DialogHeader>
-            {editingFood ? (
-              <FoodEditPage
-                food={editingFood}
-                onSave={handleSaveEdit}
-                onCancel={() => setEditingFood(null)}
-              />
-            ) : (
-              <AddFoodPage
-                onSave={handleAddFood}
-                onCancel={() => setEditingFood(null)}
-              />
-            )}
-          </DialogContent>
-        </Dialog>
+        <div
+          className="border-dashed border-2 border-gray-400 rounded-lg flex items-center justify-center text-gray-400 hover:bg-[#333347] h-84 cursor-pointer"
+          onClick={() => setShowAddModal(true)}
+        >
+          + Thêm món ăn
+        </div>
       </div>
+
+      {/* Modal Thêm món ăn */}
+      <Dialog open={showAddModal} onOpenChange={setShowAddModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Thêm món ăn</DialogTitle>
+          </DialogHeader>
+          <AddFoodPage
+            categories={categories}
+            onSave={(food) => {
+              handleAddFood(food);
+              setShowAddModal(false);
+            }}
+            onCancel={() => setShowAddModal(false)}
+          />
+        </DialogContent>
+      </Dialog>
+
+      {/* Modal Sửa món ăn */}
+      <Dialog open={showEditModal} onOpenChange={setShowEditModal}>
+        <DialogContent className="bg-[#252836] text-white">
+          <DialogHeader>
+            <DialogTitle>Sửa món ăn</DialogTitle>
+          </DialogHeader>
+          {editingFood && (
+            <FoodEditPage
+              food={editingFood}
+              categories={categories}
+              onSave={handleSaveEdit}
+              onCancel={() => setShowEditModal(false)}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
 
       {/* Nút lưu và hủy */}
       <div className="flex justify-end space-x-4 mt-6">

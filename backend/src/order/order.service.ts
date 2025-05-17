@@ -7,6 +7,23 @@ export class OrderService {
   constructor(private prisma: PrismaService) {}
 
   async createOrder(data: any) {
+    for (const item of data.items) {
+      const food = await this.prisma.food.findUnique({
+        where: { id: item.foodId },
+      });
+      if (!food) throw new Error(`Món ăn không tồn tại`);
+      if (food.quantity < item.quantity) {
+        throw new Error(
+          `Món "${food.name}" không đủ số lượng (${food.quantity} còn lại)`,
+        );
+      }
+    }
+    for (const item of data.items) {
+    await this.prisma.food.update({
+      where: { id: item.foodId },
+      data: { quantity: { decrement: item.quantity } },
+    });
+    }
     return this.prisma.order.create({
       data: {
         orderNumber: data.orderNumber,
@@ -41,11 +58,11 @@ export class OrderService {
     });
   }
   async updateStatus(id: number, status: string) {
-  return this.prisma.order.update({
-    where: { id },
-    data: { status: status as OrderStatus }, // Ép kiểu về enum
-  });
-}
+    return this.prisma.order.update({
+      where: { id },
+      data: { status: status as OrderStatus }, // Ép kiểu về enum
+    });
+  }
 
   async getOrderById(id: number) {
     return this.prisma.order.findUnique({

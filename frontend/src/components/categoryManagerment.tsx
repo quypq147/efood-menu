@@ -7,7 +7,7 @@ import {
 } from '@/api/category';
 import Link from 'next/link';
 
-const CategoryManagement = () => {
+const CategoryManagement = ({ onBack, onGoToFood }) => {
   const [categories, setCategories] = useState([]); // Danh sách danh mục
   const [newCategory, setNewCategory] = useState(''); // Tên danh mục mới
   const [editingCategory, setEditingCategory] = useState(null); // Danh mục đang chỉnh sửa
@@ -85,7 +85,8 @@ const CategoryManagement = () => {
       <div className='flex justify-between items-center mb-4'>
         <h1 className="text-2xl font-bold mb-6">Quản lý danh mục</h1>
       <Link href="/settings">
-        <button className="px-4 py-2 bg-[#ff6b5c] cursor-pointer text-white rounded-lg mb-4">
+        <button className="px-4 py-2 bg-[#ff6b5c] cursor-pointer text-white rounded-lg mb-4"
+        onClick={onGoToFood}>
           Quay lại trang quản lý món ăn
         </button>
       </Link> 

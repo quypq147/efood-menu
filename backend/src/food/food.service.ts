@@ -36,4 +36,32 @@ export class FoodService {
       },
     });
   }
+  async updateFood(id: number, data: {
+  name?: string;
+  description?: string;
+  price?: number;
+  quantity?: number;
+  image?: string;
+  categoryId?: number;
+}) {
+  if (data.categoryId) {
+    const categoryExists = await this.prisma.category.findUnique({
+      where: { id: data.categoryId },
+    });
+    if (!categoryExists) {
+      throw new Error('Danh mục không tồn tại.');
+    }
+  }
+  return this.prisma.food.update({
+    where: { id },
+    data: {
+      name: data.name,
+      description: data.description,
+      price: data.price,
+      quantity: data.quantity,
+      image: data.image,
+      categoryId: data.categoryId,
+    },
+  });
+}
 }
