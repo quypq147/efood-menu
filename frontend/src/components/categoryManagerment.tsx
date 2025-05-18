@@ -81,7 +81,7 @@ const CategoryManagement = ({ onBack, onGoToFood }) => {
   };
 
   return (
-    <div className="p-6  text-white rounded-lg  max-w-2xl overflow-hidden">
+    <div className="p-4  text-white rounded-lg  max-w-2xl overflow-hidden">
       <div className='flex justify-between items-center mb-4'>
         <h1 className="text-2xl font-bold mb-6">Quản lý danh mục</h1>
       <Link href="/settings">

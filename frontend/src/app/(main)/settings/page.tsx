@@ -39,7 +39,7 @@ const sidebarItems = [
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState();
 
-  return (
+  return (  
     <div className="flex p-5 ml-10 h-screen text-white">
       {/* Header */}
       <div className="flex flex-col">
@@ -70,7 +70,7 @@ export default function SettingsPage() {
                 >
                   {item.label}
                 </span>
-                <span className="text-xs text-gray-500">
+                <span className="text-xs text-start text-gray-500">
                   {item.description}
                 </span>
               </div>

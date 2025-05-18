@@ -15,6 +15,9 @@ import { OrderModule } from './order/order.module';
 import { OrderItemModule } from './order-item/order-item.module';
 import { CategoryModule } from './category/category.module';
 import { UploadController } from './uploads/uploads.controller';
+import { InvoiceController } from './invoice/invoice.controller';
+import { InvoiceService } from './invoice/invoice.service';
+import { InvoiceModule } from './invoice/invoice.module';
 
 @Module({
   imports: [
@@ -26,10 +29,11 @@ import { UploadController } from './uploads/uploads.controller';
     FoodModule,
     OrderModule,
     OrderItemModule,
-    CategoryModule, // ✅ Import module, không cần re-provide
+    CategoryModule,
+    InvoiceModule, // ✅ Import module, không cần re-provide
   ],
-  controllers: [AppController, PermissionController, RolePermissionsController, UploadController],
-  providers: [AppService, PermissonsService , PrismaService], 
+  controllers: [AppController, PermissionController, RolePermissionsController, UploadController, InvoiceController],
+  providers: [AppService, PermissonsService , PrismaService, InvoiceService], 
 })
 export class AppModule {}
 

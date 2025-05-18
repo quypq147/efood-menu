@@ -5,24 +5,20 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { useDropzone } from 'react-dropzone';
-import { getCategories } from '@/api/category'; // Import API để lấy danh mục
-import { uploadImage } from '@/api/upload'; // Import hàm uploadImage
-import { axiosInstance } from '@/lib/axios'; // Import axiosInstance
+import { getCategories } from '@/api/category';
+import { uploadImage } from '@/api/upload';
 
 export default function AddFoodPage({ onSave, onCancel, initialData = null }) {
   const [name, setName] = useState(initialData?.name || '');
   const [price, setPrice] = useState(initialData?.price || '');
   const [quantity, setQuantity] = useState(initialData?.quantity || '');
   const [image, setImage] = useState(
-    initialData?.image
-      ? { preview: initialData.image }
-      : null
+    initialData?.image ? { preview: initialData.image } : null
   );
   const [description, setDescription] = useState(initialData?.description || '');
-  const [categoryId, setCategoryId] = useState(initialData?.categoryId || ''); // Thêm state cho danh mục
-  const [categories, setCategories] = useState([]); // Danh sách danh mục
+  const [categoryId, setCategoryId] = useState(initialData?.categoryId || '');
+  const [categories, setCategories] = useState([]);
 
-  // Lấy danh sách danh mục từ backend
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -53,38 +49,26 @@ export default function AddFoodPage({ onSave, onCancel, initialData = null }) {
     }
 
     let imageUrl = image.preview || image;
-
-    // Tải lên hình ảnh nếu là blob URL
-    if (image && image.preview) {
+    // Nếu là file mới, upload ảnh trước khi lưu
+    if (image && image.preview && image instanceof File) {
       try {
-        imageUrl = await uploadImage(image, name); // Gửi tên món ăn cùng với hình ảnh
+        imageUrl = await uploadImage(image, name);
       } catch (error) {
-        console.error('Lỗi khi tải lên hình ảnh:', error);
-        alert('Đã xảy ra lỗi khi tải lên hình ảnh. Vui lòng thử lại.');
+        alert('Lỗi khi tải lên hình ảnh.');
         return;
       }
     }
 
     const newFood = {
-      id: initialData?.id || Date.now(),
       name,
       price: parseFloat(price),
       quantity: parseInt(quantity, 10),
-      image: imageUrl, // URL hình ảnh đã tải lên
+      image: imageUrl,
       description,
       categoryId: parseInt(categoryId, 10),
     };
 
-    console.log('Dữ liệu gửi đến API:', newFood);
-
-    try {
-      const response = await axiosInstance.post('/food', newFood); // Sử dụng axiosInstance
-      console.log('Phản hồi từ API:', response.data);
-      onSave(response.data);
-    } catch (error) {
-      console.error('Lỗi khi thêm món ăn:', error);
-      alert('Đã xảy ra lỗi khi thêm món ăn. Vui lòng thử lại.');
-    }
+    onSave(newFood); // chỉ trả dữ liệu về, không gọi API ở đây!
   };
 
   return (

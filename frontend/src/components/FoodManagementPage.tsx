@@ -49,8 +49,9 @@ export default function FoodManagementPage() {
       return;
     }
     try {
-      const addedFood = await addFood(newFood);
+      const addedFood = await addFood(newFood); // chỉ gọi API ở đây
       setFood((prevFoods) => [...prevFoods, addedFood]);
+      setShowAddModal(false);
     } catch (error) {
       console.error("Lỗi khi thêm món ăn:", error);
     }
@@ -84,14 +85,12 @@ export default function FoodManagementPage() {
 
   if (showCategoryManagement) {
     return (
-      <CategoryManagement
-        onGoToFood={() => setShowCategoryManagement(false)}
-      />
+      <CategoryManagement onGoToFood={() => setShowCategoryManagement(false)} />
     );
   }
 
   return (
-    <div className="p-6 bg-[#252836] text-white rounded-lg">
+    <div className="p-5 bg-[#252836] text-white rounded-lg">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Quản lý món ăn</h1>
         <Button
@@ -108,10 +107,11 @@ export default function FoodManagementPage() {
           <button
             key={category.id || "all"}
             onClick={() => setActiveCategory(category.id)}
-            className={`pb-2 ${activeCategory === category.id
+            className={`pb-2 ${
+              activeCategory === category.id
                 ? "text-white border-b-2 border-[#ff6b5c]"
                 : "text-gray-400"
-              }`}
+            }`}
           >
             {category.name}
           </button>
@@ -150,11 +150,7 @@ export default function FoodManagementPage() {
             <DialogTitle>Thêm món ăn</DialogTitle>
           </DialogHeader>
           <AddFoodPage
-            categories={categories}
-            onSave={(food) => {
-              handleAddFood(food);
-              setShowAddModal(false);
-            }}
+            onSave={handleAddFood} // chỉ gọi API ở đây
             onCancel={() => setShowAddModal(false)}
           />
         </DialogContent>

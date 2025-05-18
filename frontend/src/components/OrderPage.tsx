@@ -1,6 +1,5 @@
 'use client';
 
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
 import Image from "next/image";
@@ -42,7 +41,7 @@ export default function OrderPage({ cart, onUpdateCart, onRemoveItem, onCheckout
           price: item.price,
           note: notes[item.id] || "",
         })),
-        userId: user?.id, // chỉ truyền nếu có user đăng nhập
+        userId: user?.id,
       });
       router.push("/payment-success");
     } catch (err) {
@@ -82,80 +81,66 @@ export default function OrderPage({ cart, onUpdateCart, onRemoveItem, onCheckout
           Giao hàng
         </Button>
       </div>
-      <div className="rounded-lg bg-[#2a2a3c] p-4 mb-4">
-        <Table>
-          <TableHeader>
-            <TableRow className="text-gray-400">
-              <TableHead className="w-1/2 text-white">Món</TableHead>
-              <TableHead className="w-16 text-white text-center">SL</TableHead>
-              <TableHead className="w-24 text-white text-right">Giá</TableHead>
-              <TableHead className="w-10"></TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {cart.map((item) => (
-              <TableRow key={item.id} className="align-top hover:bg-transparent">
-                <TableCell className="flex gap-2 items-center py-2">
-                  <div className="w-10 h-10 rounded-lg overflow-hidden bg-gray-700 flex-shrink-0">
-                    <Image
-                      src={`http://localhost:30${item.image.startsWith('/') ? item.image : `/uploads/${item.image}`}`}
-                      alt={item.name}
-                      width={40}
-                      height={40}
-                      className="object-cover w-10 h-10"
-                    />
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="font-semibold text-sm truncate max-w-[100px]">{item.name}</span>
-                    <span className="text-xs text-gray-400">{item.price.toLocaleString("vi-VN")}₫</span>
-                  </div>
-                </TableCell>
-                <TableCell className="text-center align-middle">
-                  <input
-                    type="number"
-                    min={1}
-                    value={item.quantity}
-                    onChange={(e) => onUpdateCart(item.id, Math.max(1, parseInt(e.target.value) || 1))}
-                    className="w-12 bg-[#232336] text-white border border-gray-600 rounded text-center text-sm"
-                  />
-                </TableCell>
-                <TableCell className="text-right font-semibold align-middle">
-                  {(item.price * item.quantity).toLocaleString("vi-VN")}₫
-                </TableCell>
-                <TableCell className="align-middle">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => onRemoveItem(item.id)}
-                    className="text-red-500 hover:bg-transparent"
-                  >
-                    <Trash2 size={18} />
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-            {cart.length === 0 && (
-              <TableRow>
-                <TableCell colSpan={4} className="text-center text-gray-400 py-6">
-                  Chưa có món nào trong đơn hàng.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-        {/* Ghi chú cho từng món */}
+
+      {/* Danh sách món trong đơn hàng, mỗi món là một card nhỏ */}
+      <div className="flex flex-col gap-3 mb-4">
+        {cart.length === 0 && (
+          <div className="text-center text-gray-400 py-6 bg-[#2a2a3c] rounded-lg">
+            Chưa có món nào trong đơn hàng.
+          </div>
+        )}
         {cart.map((item) => (
-          <div key={item.id} className="flex items-center gap-2 mt-2">
-            <input
-              type="text"
-              placeholder="Ghi chú"
-              value={notes[item.id] || ""}
-              onChange={(e) => handleNoteChange(item.id, e.target.value)}
-              className="flex-1 bg-[#232336] text-white border border-gray-600 rounded px-3 py-1 text-sm"
-            />
+          <div
+            key={item.id}
+            className="flex items-center gap-3 bg-[#2a2a3c] rounded-lg p-3 shadow"
+          >
+            <div className="w-14 h-14 rounded-lg overflow-hidden bg-gray-700 flex-shrink-0">
+              <Image
+                src={`http://localhost:30${item.image.startsWith('/') ? item.image : `/uploads/${item.image}`}`}
+                alt={item.name}
+                width={56}
+                height={56}
+                className="object-cover w-14 h-14"
+              />
+            </div>
+            <div className="flex-1 flex flex-col gap-1">
+              <div className="flex justify-between items-center">
+                <span className="font-semibold text-base truncate max-w-[120px]">{item.name}</span>
+                <span className="font-semibold text-[#ff6b5c] text-base">
+                  {(item.price * item.quantity).toLocaleString("vi-VN")}₫
+                </span>
+              </div>
+              <span className="text-xs text-gray-400">{item.price.toLocaleString("vi-VN")}₫</span>
+              <div className="flex items-center gap-2 mt-1">
+                <span className="text-xs text-gray-400">SL:</span>
+                <input
+                  type="number"
+                  min={1}
+                  value={item.quantity}
+                  onChange={(e) => onUpdateCart(item.id, Math.max(1, parseInt(e.target.value) || 1))}
+                  className="w-12 bg-[#232336] text-white border border-gray-600 rounded text-center text-sm"
+                />
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => onRemoveItem(item.id)}
+                  className="text-red-500 hover:bg-transparent ml-2"
+                >
+                  <Trash2 size={18} />
+                </Button>
+              </div>
+              <input
+                type="text"
+                placeholder="Ghi chú"
+                value={notes[item.id] || ""}
+                onChange={(e) => handleNoteChange(item.id, e.target.value)}
+                className="w-full bg-[#232336] text-white border border-gray-600 rounded px-2 py-1 text-xs mt-1"
+              />
+            </div>
           </div>
         ))}
       </div>
+
       {/* Tổng tiền */}
       <div className="flex flex-col gap-2 mb-4">
         <div className="flex justify-between text-gray-400 text-sm">

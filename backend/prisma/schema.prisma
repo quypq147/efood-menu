@@ -91,7 +91,7 @@ model Category {
 
 model Food {
   id          Int      @id @default(autoincrement())
-  name        String
+  name        String  @unique
   description String?
   price       Float
   image       String
@@ -119,6 +119,8 @@ model Order {
   updatedAt   DateTime    @updatedAt
   user        User? @relation(fields: [userId], references: [id])
   items      OrderItem[]
+
+  Invoice Invoice[]
 }
 
 model OrderItem {
@@ -133,7 +135,17 @@ model OrderItem {
   order     Order    @relation(fields: [orderId], references: [id])
   food      Food     @relation(fields: [foodId], references: [id])
 }
-
+model Invoice {
+  id           Int       @id @default(autoincrement())
+  orderId      Int       @unique
+  order        Order     @relation(fields: [orderId], references: [id])
+  issuedAt     DateTime  @default(now())
+  total        Float
+  customerName String?
+  customerPhone String?
+  paymentType  String?   // Stripe, MoMo, Tiền mặt, v.v.
+  status       String    // PAID, UNPAID, CANCELLED, ...
+}
 enum OrderStatus {
   PENDING
   COMPLETED
