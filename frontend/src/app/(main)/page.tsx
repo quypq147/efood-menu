@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import FoodListPage from '@/components/FoodListPage';
 import OrderPage from '@/components/OrderPage';
+import { motion, AnimatePresence } from "framer-motion";
 
 
 export default function HomePage() {
@@ -41,14 +42,24 @@ export default function HomePage() {
         <div className="flex-1 p-10 overflow-y-auto scrollbar-hide">
           <FoodListPage onAddToCart={handleAddToCart} />
         </div>
-        <div className="w-[400px] bg-[#232336] h-screen overflow-y-auto scrollbar-hide">
-          <OrderPage
-            cart={cart}
-            onUpdateCart={handleUpdateCart}
-            onRemoveItem={handleRemoveItem}
-            onCheckout={handleCheckout}
-          />
-        </div>
+        <AnimatePresence>
+          <motion.div
+            key="order"
+            initial={{ x: 400, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: 400, opacity: 0 }}
+            transition={{ type: "spring", stiffness: 200, damping: 30 }}
+            className="w-[400px] bg-[#232336] h-screen overflow-y-auto scrollbar-hide"
+          >
+            <OrderPage
+              cart={cart}
+              onUpdateCart={handleUpdateCart}
+              onRemoveItem={handleRemoveItem}
+              onCheckout={handleCheckout}
+              user={undefined}
+            />
+          </motion.div>
+        </AnimatePresence>
       </div>
     </div>
   );

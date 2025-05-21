@@ -4,20 +4,19 @@ import {
   Moon,
   Globe2,
   Bell,
-  ShieldCheck,
-  LayoutDashboard,
   Info,
 } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import FoodManagementPage from "@/components/FoodManagementPage";
 import { Button } from "@/components/ui/button";
+import AppearanceSetting from "@/components/AppearanceSetting";
 
 const sidebarItems = [
   {
     label: "Giao diện",
     icon: Moon,
-    description: "Tuỳ chỉnh giao diện của bạn", 
+    description: "Tuỳ chỉnh giao diện của bạn",
   },
   {
     label: "Quản lý sản phẩm",
@@ -39,7 +38,7 @@ const sidebarItems = [
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState();
 
-  return (  
+  return (
     <div className="flex p-5 ml-10 h-screen text-white">
       {/* Header */}
       <div className="flex flex-col">
@@ -52,7 +51,9 @@ export default function SettingsPage() {
               onClick={() => setActiveTab(item.label)}
               className={cn(
                 "w-full flex background-none items-center gap-4 p-3 rounded-lg transition-all duration-200 hover:text-white",
-               activeTab === item.label ? "bg-[#333347] text-white" : "text-gray-400 hover:bg-[#333347] hover:text-white"
+                activeTab === item.label
+                  ? "bg-[#333347] text-white"
+                  : "text-gray-400 hover:bg-[#333347] hover:text-white"
               )}
             >
               <item.icon
@@ -89,12 +90,10 @@ export default function SettingsPage() {
           )}
         </div>
         <div className="mt-6">
-          {activeTab === "Appearance" && (
-            <div>Dark and Light mode settings go here...</div>
-          )}
+          {activeTab === "Giao diện" && <AppearanceSetting />}
           {activeTab === "Quản lý sản phẩm" && <FoodManagementPage />}
-          
-          {activeTab === "Notifications" && (
+
+          {activeTab === "Thông báo" && (
             <div>Notification settings go here...</div>
           )}
           {activeTab === "About Us" && (

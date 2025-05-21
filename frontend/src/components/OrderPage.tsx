@@ -6,6 +6,7 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import { createOrder } from "@/api/order";
 import { useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function OrderPage({ cart, onUpdateCart, onRemoveItem, onCheckout, user }) {
   const [notes, setNotes] = useState({});
@@ -89,56 +90,62 @@ export default function OrderPage({ cart, onUpdateCart, onRemoveItem, onCheckout
             Chưa có món nào trong đơn hàng.
           </div>
         )}
-        {cart.map((item) => (
-          <div
-            key={item.id}
-            className="flex items-center gap-3 bg-[#2a2a3c] rounded-lg p-3 shadow"
-          >
-            <div className="w-14 h-14 rounded-lg overflow-hidden bg-gray-700 flex-shrink-0">
-              <Image
-                src={`http://localhost:30${item.image.startsWith('/') ? item.image : `/uploads/${item.image}`}`}
-                alt={item.name}
-                width={56}
-                height={56}
-                className="object-cover w-14 h-14"
-              />
-            </div>
-            <div className="flex-1 flex flex-col gap-1">
-              <div className="flex justify-between items-center">
-                <span className="font-semibold text-base truncate max-w-[120px]">{item.name}</span>
-                <span className="font-semibold text-[#ff6b5c] text-base">
-                  {(item.price * item.quantity).toLocaleString("vi-VN")}₫
-                </span>
-              </div>
-              <span className="text-xs text-gray-400">{item.price.toLocaleString("vi-VN")}₫</span>
-              <div className="flex items-center gap-2 mt-1">
-                <span className="text-xs text-gray-400">SL:</span>
-                <input
-                  type="number"
-                  min={1}
-                  value={item.quantity}
-                  onChange={(e) => onUpdateCart(item.id, Math.max(1, parseInt(e.target.value) || 1))}
-                  className="w-12 bg-[#232336] text-white border border-gray-600 rounded text-center text-sm"
+        <AnimatePresence>
+          {cart.map((item) => (
+            <motion.div
+              key={item.id}
+              initial={{ opacity: 0, x: 40 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 40 }}
+              transition={{ duration: 0.2 }}
+              className="flex items-center gap-3 bg-[#2a2a3c] rounded-lg p-3 shadow"
+            >
+              <div className="w-14 h-14 rounded-lg overflow-hidden bg-gray-700 flex-shrink-0">
+                <Image
+                  src={`http://localhost:30${item.image.startsWith('/') ? item.image : `/uploads/${item.image}`}`}
+                  alt={item.name}
+                  width={56}
+                  height={56}
+                  className="object-cover w-14 h-14"
                 />
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => onRemoveItem(item.id)}
-                  className="text-red-500 hover:bg-transparent ml-2"
-                >
-                  <Trash2 size={18} />
-                </Button>
               </div>
-              <input
-                type="text"
-                placeholder="Ghi chú"
-                value={notes[item.id] || ""}
-                onChange={(e) => handleNoteChange(item.id, e.target.value)}
-                className="w-full bg-[#232336] text-white border border-gray-600 rounded px-2 py-1 text-xs mt-1"
-              />
-            </div>
-          </div>
-        ))}
+              <div className="flex-1 flex flex-col gap-1">
+                <div className="flex justify-between items-center">
+                  <span className="font-semibold text-base truncate max-w-[120px]">{item.name}</span>
+                  <span className="font-semibold text-[#ff6b5c] text-base">
+                    {(item.price * item.quantity).toLocaleString("vi-VN")}₫
+                  </span>
+                </div>
+                <span className="text-xs text-gray-400">{item.price.toLocaleString("vi-VN")}₫</span>
+                <div className="flex items-center gap-2 mt-1">
+                  <span className="text-xs text-gray-400">SL:</span>
+                  <input
+                    type="number"
+                    min={1}
+                    value={item.quantity}
+                    onChange={(e) => onUpdateCart(item.id, Math.max(1, parseInt(e.target.value) || 1))}
+                    className="w-12 bg-[#232336] text-white border border-gray-600 rounded text-center text-sm"
+                  />
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => onRemoveItem(item.id)}
+                    className="text-red-500 hover:bg-transparent ml-2"
+                  >
+                    <Trash2 size={18} />
+                  </Button>
+                </div>
+                <input
+                  type="text"
+                  placeholder="Ghi chú"
+                  value={notes[item.id] || ""}
+                  onChange={(e) => handleNoteChange(item.id, e.target.value)}
+                  className="w-full bg-[#232336] text-white border border-gray-600 rounded px-2 py-1 text-xs mt-1"
+                />
+              </div>
+            </motion.div>
+          ))}
+        </AnimatePresence>
       </div>
 
       {/* Tổng tiền */}
