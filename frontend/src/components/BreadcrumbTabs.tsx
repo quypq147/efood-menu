@@ -4,6 +4,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 
 const tabs = [
+  { name: 'Trang số liệu', href: '/admin' },
   { name: 'Người dùng', href: '/admin/users' },
   { name: 'Vai Trò', href: '/admin/roles' },
   { name: 'Phân Quyền', href: '/admin/permissions' },

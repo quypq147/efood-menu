@@ -8,18 +8,20 @@ import {
   CardHeader,
 } from "@/components/ui/card";
 import { useUserStore } from "@/store/userStore";
+import { useRouter } from "next/navigation"; // Thêm dòng này
 
-export default function FoodCard({ image, name, price, quantity, onEdit }) {
-  const { user } = useUserStore(); // Lấy thông tin người dùng từ store
+export default function FoodCard({ image, name, price, quantity, onEdit, id }) {
+  const { user } = useUserStore();
+  const router = useRouter(); // Thêm dòng này
 
   const isEditable =
-    user?.roleName === "Admin" || user?.roleName === "Nhân viên"; // Kiểm tra quyền
+    user?.roleName === "Admin" || user?.roleName === "Nhân viên";
 
   return (
     <Card className="bg-[#2a2a3c] text-white hover:shadow-lg hover:bg-[#333347] transition-all  border-0">
       <CardHeader className="p-0">
         <img
-          src={`http://localhost:30${
+          src={`${process.env.NEXT_PUBLIC_API_URL}${
             image.startsWith("/") ? image : `/uploads/${image}`
           }`}
           alt={name}
@@ -33,7 +35,7 @@ export default function FoodCard({ image, name, price, quantity, onEdit }) {
           {new Intl.NumberFormat("vi-VN").format(quantity)} bát
         </p>
       </CardContent>
-      <CardFooter className="p-4">
+      <CardFooter className="p-4 flex flex-col gap-2">
         {isEditable ? (
           <Button
             className="w-full cursor-pointer bg-[#ff6b5c] hover:bg-[#ff8575]"
@@ -48,6 +50,14 @@ export default function FoodCard({ image, name, price, quantity, onEdit }) {
             Còn lại: {new Intl.NumberFormat("vi-VN").format(quantity)}
           </p>
         )}
+        {/* Nút xem chi tiết */}
+        <Button
+          variant="outline"
+          className="w-full mt-2 border-[#ff6b5c] text-[#ff6b5c] hover:bg-[#ff6b5c] hover:text-white"
+          onClick={() => router.push(`/food/${id}`)}
+        >
+          Xem chi tiết
+        </Button>
       </CardFooter>
     </Card>
   );

@@ -18,6 +18,8 @@ import { UploadController } from './uploads/uploads.controller';
 import { InvoiceController } from './invoice/invoice.controller';
 import { InvoiceService } from './invoice/invoice.service';
 import { InvoiceModule } from './invoice/invoice.module';
+import { AdminController } from './admin/admin.controller';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
   imports: [
@@ -30,9 +32,10 @@ import { InvoiceModule } from './invoice/invoice.module';
     OrderModule,
     OrderItemModule,
     CategoryModule,
-    InvoiceModule, // ✅ Import module, không cần re-provide
+    InvoiceModule,
+    AdminModule, // ✅ Import module, không cần re-provide
   ],
-  controllers: [AppController, PermissionController, RolePermissionsController, UploadController, InvoiceController],
+  controllers: [AppController, PermissionController, RolePermissionsController, UploadController, InvoiceController, AdminController],
   providers: [AppService, PermissonsService , PrismaService, InvoiceService], 
 })
 export class AppModule {}

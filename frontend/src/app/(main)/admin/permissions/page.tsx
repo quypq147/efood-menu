@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import BreadcrumbTabs from "@/components/BreadcrumbTabs";
 import { cn } from "@/lib/utils";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface Role {
   id: number;
@@ -87,27 +88,17 @@ export default function RolePermissionMatrix() {
   };
 
   return (
-    <div className="p-4 bg-[#1c1c28] text-white rounded-xl">
+    <div className="p-6 text-white rounded-xl min-h-[80vh] shadow-lg">
       <BreadcrumbTabs />
       <h2 className="text-2xl font-bold mb-6">🛡️ Bảng phân quyền</h2>
 
-      <div className="space-y-4">
-        {permissions.map((perm) => (
-          <div
-            key={perm.id}
-            className="bg-[#2a2a3c] px-6 py-4 rounded-lg shadow flex items-center justify-between hover:bg-[#313140] transition"
-          >
-            <div className="flex-1">
-              <p className="text-base font-semibold">{perm.name}</p>
-              <p className="text-sm text-gray-400">Phân quyền theo vai trò</p>
-            </div>
-
-            <div className="flex gap-6">
+      <div className="overflow-x-auto rounded-lg border border-[#313140] bg-[#232336]">
+        <table className="min-w-[700px] w-full text-sm">
+          <thead className="sticky top-0 z-10 bg-[#232336] border-b border-[#313140]">
+            <tr>
+              <th className="text-left py-3 px-4 font-semibold">Quyền</th>
               {roles.map((role) => (
-                <div
-                  key={role.id}
-                  className="flex flex-col gap-2 items-center text-sm"
-                >
+                <th key={role.id} className="text-center px-4">
                   <Badge
                     className={cn(
                       "px-4 py-1 rounded-md text-sm font-semibold",
@@ -118,16 +109,39 @@ export default function RolePermissionMatrix() {
                   >
                     {role.name}
                   </Badge>
-                  <Checkbox
-                    checked={matrix[role.id]?.[perm.id] || false}
-                    onCheckedChange={() => togglePermission(role.id, perm.id)}
-                    className="border-gray-400 data-[state=checked]:bg-[#ff6b5c] data-[state=checked]:border-[#ff6b5c]"
-                  />
-                </div>
+                </th>
               ))}
-            </div>
-          </div>
-        ))}
+            </tr>
+          </thead>
+          <tbody>
+            <AnimatePresence>
+              {permissions.map((perm, idx) => (
+                <motion.tr
+                  key={perm.id}
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 30 }}
+                  transition={{ delay: idx * 0.04 }}
+                  className="border-b border-[#313140] hover:bg-[#28283a] transition"
+                >
+                  <td className="py-3 px-4">
+                    <div className="font-medium">{perm.name}</div>
+                    <div className="text-xs text-gray-400">Phân quyền theo vai trò</div>
+                  </td>
+                  {roles.map((role) => (
+                    <td key={role.id} className="text-center">
+                      <Checkbox
+                        checked={matrix[role.id]?.[perm.id] || false}
+                        onCheckedChange={() => togglePermission(role.id, perm.id)}
+                        className="border-gray-400 data-[state=checked]:bg-[#ff6b5c] data-[state=checked]:border-[#ff6b5c]"
+                      />
+                    </td>
+                  ))}
+                </motion.tr>
+              ))}
+            </AnimatePresence>
+          </tbody>
+        </table>
       </div>
 
       <div className="mt-8 flex justify-end gap-3">
@@ -138,6 +152,15 @@ export default function RolePermissionMatrix() {
           Lưu
         </Button>
       </div>
+      <style jsx global>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: #313140;
+          border-radius: 4px;
+        }
+      `}</style>
     </div>
   );
 }
