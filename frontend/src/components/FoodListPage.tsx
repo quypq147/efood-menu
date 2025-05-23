@@ -95,6 +95,8 @@ export default function FoodListPage({ onAddToCart }) {
               className="cursor-pointer"
             >
               <FoodCard
+                key={food.id}
+                id={food.id}
                 image={food.image}
                 name={food.name}
                 price={food.price}

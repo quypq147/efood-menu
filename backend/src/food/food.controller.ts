@@ -28,6 +28,18 @@ export class FoodController {
   async getAllFoods() {
     return this.foodService.getAllFoods(); // Gọi phương thức từ FoodService
   }
+  @Get(':id')
+  async getFoodById(@Param('id') id: string) {
+    // Lấy dữ liệu từ DB, ví dụ:
+    const food = await this.foodService.getFoodById(Number(id));
+    // Lấy comments, likes nếu có
+    return {
+      food,
+      comments: [], // hoặc lấy từ DB
+      likes: 0,     // hoặc lấy từ DB
+      liked: false, // hoặc lấy từ DB
+    };
+  }
   @Put(':id')
   async updateFoodPut(@Param('id') id: string, @Body() data: any) {
     try {

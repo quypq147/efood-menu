@@ -7,26 +7,66 @@ import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
 import BreadcrumbTabs from "@/components/BreadcrumbTabs";
 import AnimatePage from "@/components/AnimatePage";
+import { axiosInstance } from "@/lib/axios";
 
 export default function AdminHomePage() {
   const [stats, setStats] = useState([
-    { title: "Người dùng", icon: <Users className="w-5 h-5" />, value: 0, href: "/admin/users" },
-    { title: "Vai trò", icon: <Tags className="w-5 h-5" />, value: 0, href: "/admin/roles" },
-    { title: "Món ăn", icon: <UtensilsCrossed className="w-5 h-5" />, value: 0, href: "/admin/foods" },
-    { title: "Đơn hàng", icon: <ShoppingBag className="w-5 h-5" />, value: 0, href: "/admin/orders" },
+    {
+      title: "Người dùng",
+      icon: <Users className="w-5 h-5" />,
+      value: 0,
+      href: "/admin/users",
+    },  
+    {
+      title: "Vai trò",
+      icon: <Tags className="w-5 h-5" />,
+      value: 0,
+      href: "/admin/roles",
+    },
+    {
+      title: "Món ăn",
+      icon: <UtensilsCrossed className="w-5 h-5" />,
+      value: 0,
+      href: "/admin/foods",
+    },
+    {
+      title: "Đơn hàng",
+      icon: <ShoppingBag className="w-5 h-5" />,
+      value: 0,
+      href: "/admin/orders",
+    },
   ]);
 
   useEffect(() => {
-    fetch("/api/admin/stats")
-      .then(res => res.json())
-      .then(data => {
-        setStats([
-          { title: "Người dùng", icon: <Users className="w-5 h-5" />, value: data.users, href: "/admin/users" },
-          { title: "Vai trò", icon: <Tags className="w-5 h-5" />, value: data.roles, href: "/admin/roles" },
-          { title: "Món ăn", icon: <UtensilsCrossed className="w-5 h-5" />, value: data.foods, href: "/admin/foods" },
-          { title: "Đơn hàng", icon: <ShoppingBag className="w-5 h-5" />, value: data.orders, href: "/admin/orders" },
-        ]);
-      });
+    axiosInstance.get("/admin/stats").then((res) => {
+      const data = res.data;
+      setStats([
+        {
+          title: "Người dùng",
+          icon: <Users className="w-5 h-5" />,
+          value: data.users,
+          href: "/admin/users",
+        },
+        {
+          title: "Vai trò",
+          icon: <Tags className="w-5 h-5" />,
+          value: data.roles,
+          href: "/admin/roles",
+        },
+        {
+          title: "Món ăn",
+          icon: <UtensilsCrossed className="w-5 h-5" />,
+          value: data.foods,
+          href: "/admin/foods",
+        },
+        {
+          title: "Đơn hàng",
+          icon: <ShoppingBag className="w-5 h-5" />,
+          value: data.orders,
+          href: "/admin/orders",
+        },
+      ]);
+    });
   }, []);
 
   return (

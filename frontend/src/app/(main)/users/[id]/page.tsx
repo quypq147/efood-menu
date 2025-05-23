@@ -13,11 +13,13 @@ import { Button } from '@/components/ui/button';
 import { axiosInstance } from '@/lib/axios';
 import { useParams } from 'next/navigation';
 import { toast } from 'sonner';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function UserSettingsPage() {
   const { id } = useParams();
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState('profile');
   const [form, setForm] = useState({
     fullname: '',
     address: '',
@@ -86,10 +88,14 @@ export default function UserSettingsPage() {
   };
 
   return (
-    <div className="  text-white py-10 px-6 flex justify-center items-start">
+    <div className="text-white py-10 px-6 flex justify-center items-start">
       <div className="w-full max-w-5xl bg-[#2a2a3c] rounded-2xl shadow-lg p-6 md:p-10">
         <h2 className="text-3xl font-bold mb-6">Cài đặt tài khoản</h2>
-        <Tabs defaultValue="profile" className="space-y-6">
+        <Tabs
+          defaultValue="profile"
+          className="space-y-6"
+          onValueChange={setActiveTab}
+        >
           <TabsList className="bg-[#1f1f2e] rounded-lg flex gap-2 mb-4 w-full max-w-md">
             <TabsTrigger
               value="profile"
@@ -105,88 +111,108 @@ export default function UserSettingsPage() {
             </TabsTrigger>
           </TabsList>
 
-          {/* Hồ sơ */}
-          <TabsContent value="profile" className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <Label>Họ tên</Label>
-                <Input
-                  name="fullname"
-                  value={form.fullname}
-                  onChange={handleInfoChange}
-                  className="bg-white text-black mt-1"
-                />
-              </div>
-              <div>
-                <Label>Số điện thoại</Label>
-                <Input
-                  name="phoneNumber"
-                  value={form.phoneNumber}
-                  onChange={handleInfoChange}
-                  className="bg-white text-black mt-1"
-                />
-              </div>
-              <div>
-                <Label>Địa chỉ</Label>
-                <Input
-                  name="address"
-                  value={form.address}
-                  onChange={handleInfoChange}
-                  className="bg-white text-black mt-1"
-                />
-              </div>
-              <div>
-                <Label>Ngày sinh</Label>
-                <Input
-                  name="birthDate"
-                  type="date"
-                  value={form.birthDate}
-                  onChange={handleInfoChange}
-                  className="bg-white text-black mt-1"
-                />
-              </div>
-            </div>
-            <Button
-              onClick={handleInfoSubmit}
-              disabled={loading}
-              className="bg-[#ff6b5c] hover:bg-[#ff8575] mt-4"
-            >
-              {loading ? 'Đang lưu...' : 'Lưu thay đổi'}
-            </Button>
-          </TabsContent>
-
-          {/* Bảo mật */}
-          <TabsContent value="security" className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <Label>Mật khẩu hiện tại</Label>
-                <Input
-                  type="password"
-                  name="oldPassword"
-                  value={passwordForm.oldPassword}
-                  onChange={handlePasswordChange}
-                  className="bg-white text-black mt-1"
-                />
-              </div>
-              <div>
-                <Label>Mật khẩu mới</Label>
-                <Input
-                  type="password"
-                  name="newPassword"
-                  value={passwordForm.newPassword}
-                  onChange={handlePasswordChange}
-                  className="bg-white text-black mt-1"
-                />
-              </div>
-            </div>
-            <Button
-              onClick={handlePasswordSubmit}
-              disabled={loading}
-              className="bg-[#ff6b5c] hover:bg-[#ff8575] mt-4"
-            >
-              {loading ? 'Đang đổi...' : 'Đổi mật khẩu'}
-            </Button>
-          </TabsContent>
+          {/* Hiệu ứng động cho TabsContent */}
+          <AnimatePresence mode="wait">
+            {activeTab === 'profile' && (
+              <TabsContent value="profile" className="space-y-6" forceMount>
+                <motion.div
+                  key="profile"
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -30 }}
+                  transition={{ duration: 0.35 }}
+                >
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <Label>Họ tên</Label>
+                      <Input
+                        name="fullname"
+                        value={form.fullname}
+                        onChange={handleInfoChange}
+                        className="bg-white text-black mt-1"
+                      />
+                    </div>
+                    <div>
+                      <Label>Số điện thoại</Label>
+                      <Input
+                        name="phoneNumber"
+                        value={form.phoneNumber}
+                        onChange={handleInfoChange}
+                        className="bg-white text-black mt-1"
+                      />
+                    </div>
+                    <div>
+                      <Label>Địa chỉ</Label>
+                      <Input
+                        name="address"
+                        value={form.address}
+                        onChange={handleInfoChange}
+                        className="bg-white text-black mt-1"
+                      />
+                    </div>
+                    <div>
+                      <Label>Ngày sinh</Label>
+                      <Input
+                        name="birthDate"
+                        type="date"
+                        value={form.birthDate}
+                        onChange={handleInfoChange}
+                        className="bg-white text-black mt-1"
+                      />
+                    </div>
+                  </div>
+                  <Button
+                    onClick={handleInfoSubmit}
+                    disabled={loading}
+                    className="bg-[#ff6b5c] hover:bg-[#ff8575] mt-4"
+                  >
+                    {loading ? 'Đang lưu...' : 'Lưu thay đổi'}
+                  </Button>
+                </motion.div>
+              </TabsContent>
+            )}
+            {activeTab === 'security' && (
+              <TabsContent value="security" className="space-y-6" forceMount>
+                <motion.div
+                  key="security"
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -30 }}
+                  transition={{ duration: 0.35 }}
+                >
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <Label>Mật khẩu hiện tại</Label>
+                      <Input
+                        type="password"
+                        name="oldPassword"
+                        value={passwordForm.oldPassword}
+                        onChange={handlePasswordChange}
+                        className="bg-white text-black mt-1"
+                      />
+                    </div>
+                    <div>
+                      <Label>Mật khẩu mới</Label>
+                      <Input
+                        type="password"
+                        name="newPassword"
+                        value={passwordForm.newPassword}
+                        onChange={handlePasswordChange}
+                        className="bg-white text-black mt-1"
+                      />
+                    </div>
+                  </div>
+                  <Button
+                    onClick={handlePasswordSubmit}
+                    disabled={loading}
+                    className="bg-[#ff6b5c] hover:bg-[#ff8575] mt-4"
+                  >
+                    {loading ? 'Đang đổi...' : 'Đổi mật khẩu'}
+                  </Button>
+                </motion.div>
+              </TabsContent>
+            )}
+          </AnimatePresence>
         </Tabs>
       </div>
     </div>

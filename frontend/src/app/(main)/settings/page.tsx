@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 import FoodManagementPage from "@/components/FoodManagementPage";
 import { Button } from "@/components/ui/button";
 import AppearanceSetting from "@/components/AppearanceSetting";
+import { motion, AnimatePresence } from "framer-motion";
 
 const sidebarItems = [
   {
@@ -36,7 +37,7 @@ const sidebarItems = [
 ];
 
 export default function SettingsPage() {
-  const [activeTab, setActiveTab] = useState();
+  const [activeTab, setActiveTab] = useState(sidebarItems[0].label);
 
   return (
     <div className="flex p-5 ml-10 h-screen text-white">
@@ -44,7 +45,7 @@ export default function SettingsPage() {
       <div className="flex flex-col">
         <h1 className="text-2xl font-bold mb-6">Cài Đặt</h1>
         {/* Sidebar */}
-        <aside className="w-72 bg-[#252836] p-6 space-y-4  ">
+        <aside className="w-72 bg-[#252836] p-6 space-y-4">
           {sidebarItems.map((item) => (
             <button
               key={item.label}
@@ -89,16 +90,53 @@ export default function SettingsPage() {
             </Button>
           )}
         </div>
-        <div className="mt-6">
-          {activeTab === "Giao diện" && <AppearanceSetting />}
-          {activeTab === "Quản lý sản phẩm" && <FoodManagementPage />}
-
-          {activeTab === "Thông báo" && (
-            <div>Notification settings go here...</div>
-          )}
-          {activeTab === "About Us" && (
-            <div>Information about us goes here...</div>
-          )}
+        <div className="mt-6 min-h-[300px]">
+          <AnimatePresence mode="wait">
+            {activeTab === "Giao diện" && (
+              <motion.div
+                key="appearance"
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -30 }}
+                transition={{ duration: 0.3 }}
+              >
+                <AppearanceSetting />
+              </motion.div>
+            )}
+            {activeTab === "Quản lý sản phẩm" && (
+              <motion.div
+                key="food"
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -30 }}
+                transition={{ duration: 0.3 }}
+              >
+                <FoodManagementPage />
+              </motion.div>
+            )}
+            {activeTab === "Thông báo" && (
+              <motion.div
+                key="notification"
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -30 }}
+                transition={{ duration: 0.3 }}
+              >
+                <div>Notification settings go here...</div>
+              </motion.div>
+            )}
+            {activeTab === "Về chúng tôi" && (
+              <motion.div
+                key="about"
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -30 }}
+                transition={{ duration: 0.3 }}
+              >
+                <div>Information about us goes here...</div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </main>
     </div>

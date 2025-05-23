@@ -8,7 +8,11 @@ export class FoodService {
     return this.prisma.food.findMany(); // Truy vấn tất cả món ăn từ database
   }
   
-
+  async getFoodById(id: number) {
+    return this.prisma.food.findUnique({
+      where: { id },
+    });
+  }
   async addFood(data: {
     name: string;
     description: string;

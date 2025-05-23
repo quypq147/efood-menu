@@ -7,6 +7,7 @@ import Image from "next/image";
 import { toast } from "sonner";
 import { Heart } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { axiosInstance } from "@/lib/axios";
 
 export default function FoodDetailPage() {
   const { id } = useParams();
@@ -17,15 +18,16 @@ export default function FoodDetailPage() {
   const [liked, setLiked] = useState(false);
 
   useEffect(() => {
-    fetch(`/api/food/${id}`)
-      .then(res => res.json())
-      .then(data => {
-        setFood(data.food);
-        setComments(data.comments || []);
-        setLikes(data.likes || 0);
-        setLiked(data.liked || false);
-      });
-  }, [id]);
+  axiosInstance.get(`/food/${id}`)
+    .then(res => {
+      const data = res.data;
+      setFood(data.food);
+      setComments(data.comments || []);
+      setLikes(data.likes || 0);
+      setLiked(data.liked || false);
+    })
+    .catch(() => setFood(null)); // Xử lý khi không tìm thấy
+}, [id]);
 
   const handleLike = async () => {
     setLiked(!liked);
@@ -65,12 +67,12 @@ export default function FoodDetailPage() {
           className="flex-shrink-0"
         >
           <Image
-            src={`${process.env.NEXT_PUBLIC_API_URL}${food.image.startsWith('/') ? food.image : `/uploads/${food.image}`}`}
-            alt={food.name}
-            width={240}
-            height={180}
-            className="rounded-lg object-cover"
-          />
+  src={`${axiosInstance.defaults.baseURL}${food.image.startsWith('/') ? food.image : `/uploads/${food.image}`}`}
+  alt={food.name}
+  width={240}
+  height={180}
+  className="rounded-lg object-cover"
+/>
         </motion.div>
         <div className="flex-1 flex flex-col gap-2">
           <h1 className="text-2xl font-bold">{food.name}</h1>
