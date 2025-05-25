@@ -43,6 +43,27 @@ export class MailService {
       `,
     });
   }
+  async sendInvoiceEmail(to: string, order: any) {
+  let itemsHtml = order.items.map(
+    (item) => `<tr>
+      <td>${item.food?.name || item.name}</td>
+      <td>${item.quantity}</td>
+    </tr>`
+  ).join('');
+  await this.transporter.sendMail({
+    from: process.env.MAIL_FROM,
+    to,
+    subject: `Hóa đơn đơn hàng #${order.orderNumber}`,
+    html: `
+      <h3>Hóa đơn đơn hàng #${order.orderNumber}</h3>
+      <table border="1" cellpadding="6" style="border-collapse:collapse;">
+        <tr><th>Món ăn</th><th>Số lượng</th></tr>
+        ${itemsHtml}
+      </table>
+      <p><b>Tổng tiền:</b> ${order.total?.toLocaleString('vi-VN')}₫</p>
+    `,
+  });
+}
 }
 
 

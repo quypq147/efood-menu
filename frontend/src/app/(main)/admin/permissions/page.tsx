@@ -9,6 +9,14 @@ import { Button } from "@/components/ui/button";
 import BreadcrumbTabs from "@/components/BreadcrumbTabs";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationPrevious,
+  PaginationNext,
+  PaginationLink,
+} from "@/components/ui/pagination";
 
 interface Role {
   id: number;
@@ -30,6 +38,8 @@ export default function RolePermissionMatrix() {
   const [roles, setRoles] = useState<Role[]>([]);
   const [permissions, setPermissions] = useState<Permission[]>([]);
   const [matrix, setMatrix] = useState<RolePermissionMatrix>({});
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 8; // Số quyền mỗi trang
 
   useEffect(() => {
     const fetchData = async () => {
@@ -87,12 +97,19 @@ export default function RolePermissionMatrix() {
     }
   };
 
+  // Phân trang
+  const totalPages = Math.ceil(permissions.length / itemsPerPage);
+  const paginatedPermissions = permissions.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
   return (
     <div className="p-6 text-white rounded-xl min-h-[80vh] shadow-lg">
       <BreadcrumbTabs />
       <h2 className="text-2xl font-bold mb-6">🛡️ Bảng phân quyền</h2>
 
-      <div className="overflow-x-auto rounded-lg border border-[#313140] bg-[#232336]">
+      <div className="overflow-x-auto rounded-lg border border-[#313140] bg-[#232336] max-h-[480px]">
         <table className="min-w-[700px] w-full text-sm">
           <thead className="sticky top-0 z-10 bg-[#232336] border-b border-[#313140]">
             <tr>
@@ -115,7 +132,7 @@ export default function RolePermissionMatrix() {
           </thead>
           <tbody>
             <AnimatePresence>
-              {permissions.map((perm, idx) => (
+              {paginatedPermissions.map((perm, idx) => (
                 <motion.tr
                   key={perm.id}
                   initial={{ opacity: 0, y: 30 }}
@@ -126,7 +143,9 @@ export default function RolePermissionMatrix() {
                 >
                   <td className="py-3 px-4">
                     <div className="font-medium">{perm.name}</div>
-                    <div className="text-xs text-gray-400">Phân quyền theo vai trò</div>
+                    <div className="text-xs text-gray-400">
+                      Phân quyền theo vai trò
+                    </div>
                   </td>
                   {roles.map((role) => (
                     <td key={role.id} className="text-center">
@@ -143,6 +162,36 @@ export default function RolePermissionMatrix() {
           </tbody>
         </table>
       </div>
+
+      {/* Pagination của shadcn/ui */}
+      {totalPages > 1 && (
+        <Pagination className="mt-4">
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                aria-disabled={currentPage === 1}
+              />
+            </PaginationItem>
+            {Array.from({ length: totalPages }, (_, i) => (
+              <PaginationItem key={i}>
+                <PaginationLink
+                  isActive={currentPage === i + 1}
+                  onClick={() => setCurrentPage(i + 1)}
+                >
+                  {i + 1}
+                </PaginationLink>
+              </PaginationItem>
+            ))}
+            <PaginationItem>
+              <PaginationNext
+                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                aria-disabled={currentPage === totalPages}
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      )}
 
       <div className="mt-8 flex justify-end gap-3">
         <Button variant="ghost" className="text-gray-400 hover:text-white">

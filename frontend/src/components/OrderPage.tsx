@@ -162,7 +162,7 @@ export default function OrderPage({ cart, onUpdateCart, onRemoveItem, onCheckout
       <Button
         className="w-full bg-[#ff6b5c] text-white py-3 rounded-lg text-base font-semibold"
         onClick={handleCheckoutClick}
-        disabled={loading}
+        disabled={cart.length === 0}
       >
         {loading ? "Đang xử lý..." : "Tiếp tục thanh toán"}
       </Button>

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import FoodListPage from '@/components/FoodListPage';
+import { useRouter } from "next/navigation";
 import OrderPage from '@/components/OrderPage';
 import PaymentPage from '@/components/PaymentPage';
 import { motion, AnimatePresence } from "framer-motion";
@@ -10,6 +11,7 @@ import { toast } from 'sonner';
 export default function HomePage() {
   const [cart, setCart] = useState([]);
   const [showPayment, setShowPayment] = useState(false);
+  const router = useRouter();
 
   const handleAddToCart = (food) => {
     const existingItem = cart.find((item) => item.id === food.id);
@@ -33,19 +35,27 @@ export default function HomePage() {
   };
 
   const handleCheckout = () => {
-    setShowPayment(true);
-  };
+  if (cart.length === 0) {
+    toast.error("Giỏ hàng trống!");
+    return;
+  }
+  setShowPayment(true);
+};
 
   const handleBackToOrder = () => {
     setShowPayment(false);
   };
 
   const handleConfirmPayment = () => {
-    setCart([]);
-    setShowPayment(false);
-    toast.success("Thanh toán thành công!");
-    // Có thể chuyển hướng sang trang cảm ơn hoặc in hóa đơn ở đây
-  };
+  if (cart.length === 0) {
+    toast.error("Không có món nào để thanh toán!");
+    return;
+  }
+  const fakeOrderId = 123;
+  setCart([]);
+  toast.success("Thanh toán thành công!");
+  router.push(`/payment-success?orderId=${fakeOrderId}`);
+};
 
   const total = cart.reduce((total, item) => total + item.price * item.quantity, 0);
 

@@ -20,7 +20,6 @@ export function FoodSidebar() {
 
   const navItems = [
     { icon: <Home size={20} />, href: '/', tooltip: 'Trang chủ' },
-    { icon: <LucideLayoutDashboard size={20} />, href: '/dashboard', tooltip: 'Thực đơn' },
     { icon: <Settings size={20} />, href: '/settings', tooltip: 'Cài đặt' },
   ];
 
@@ -50,6 +49,13 @@ export function FoodSidebar() {
               tooltip={item.tooltip}
             />
           ))}
+          {isAdmin && (
+            <SidebarItem
+              icon={<LucideLayoutDashboard size={20} />}
+              href="/dashboard"
+              tooltip="Trang diều khiển"
+            />
+          )}
           {isAdmin && (
             <SidebarItem
               icon={<ShieldUser size={20} />}

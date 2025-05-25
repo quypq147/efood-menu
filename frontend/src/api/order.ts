@@ -28,4 +28,8 @@ export async function updateOrderStatus(orderId: number, status: string) {
   const res = await axiosInstance.patch(`/orders/${orderId}/status`, { status });
   return res.data;
 }
+export async function sendInvoice(orderId: number) {
+  const res = await axiosInstance.post(`/orders/${orderId}/invoice`);
+  return res.data;
+}
 

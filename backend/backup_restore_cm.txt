@@ -1,4 +1,5 @@
 --backup
+docker cp E:/Project/repo/efood-menu/backend/backup.sql my-postgres:/backup.sql
 docker exec -t my-postgres pg_dump -U quypq147 -d demo_db > backup.sql
 --restore
 docker exec -i my-postgres psql -U quypq147 -d demo_db -f /backup.sql
