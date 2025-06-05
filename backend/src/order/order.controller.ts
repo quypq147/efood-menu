@@ -9,8 +9,12 @@ import {
 } from '@nestjs/common';
 import { OrderService } from './order.service';
 import { Response } from 'express';
-import PDFDocument from 'pdfkit';
-import { Req } from '@nestjs/common';
+import { Req, Res } from '@nestjs/common';
+import * as PDFDocument from 'pdfkit';
+import * as fs from 'fs';
+import * as path from 'path';
+import * as Handlebars from 'handlebars';
+import * as puppeteer from 'puppeteer';
 
 @Controller('orders')
 export class OrderController {
@@ -51,26 +55,39 @@ export class OrderController {
     return { invoice: order };
   }
   @Get(':id/invoice-pdf')
-  async downloadInvoicePdf(@Param('id') id: string, @Req() res: Response) {
+  async downloadInvoicePdf(@Param('id') id: string, @Res() res: Response) {
     const order = await this.orderService.getOrderById(Number(id));
     if (!order) throw new NotFoundException('Không tìm thấy đơn hàng');
 
-    const doc = new PDFDocument();
+    // Đọc template HTML
+    const templatePath = path.join(
+      __dirname,
+      '../../templates/invoice-template.html',
+    );
+    const html = fs.readFileSync(templatePath, 'utf8');
+
+    // Compile template với Handlebars
+    Handlebars.registerHelper('multiply', (a, b) => a * b);
+    const template = Handlebars.compile(html);
+    const htmlContent = template({
+      orderNumber: order.orderNumber,
+      createdAt: new Date(order.createdAt).toLocaleString('vi-VN'),
+      items: order.items,
+      total: order.total?.toLocaleString('vi-VN'),
+    });
+
+    // Render PDF bằng Puppeteer
+    const browser = await puppeteer.launch();
+    const page = await browser.newPage();
+    await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
+    const pdfBuffer = await page.pdf({ format: 'A4' });
+    await browser.close();
+
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader(
       'Content-Disposition',
       `attachment; filename=invoice_${order.orderNumber}.pdf`,
     );
-    doc.pipe(res);
-
-    doc.fontSize(20).text(`HÓA ĐƠN #${order.orderNumber}`, { align: 'center' });
-    doc.moveDown();
-    doc.fontSize(14).text('Danh sách món ăn:');
-    order.items.forEach((item) => {
-      doc.text(`- ${item.food?.name}: ${item.quantity}`);
-    });
-    doc.moveDown();
-    doc.text(`Tổng tiền: ${order.total?.toLocaleString('vi-VN')}₫`);
-    doc.end();
+    res.end(pdfBuffer);
   }
 }

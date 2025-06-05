@@ -10,9 +10,9 @@ import {
 import { useUserStore } from "@/store/userStore";
 import { useRouter } from "next/navigation"; // Thêm dòng này
 
-export default function FoodCard({ image, name, price, quantity, onEdit, id }) {
+export default function FoodCard({ image, name, price, quantity, onEdit, id, onAddToCart }) {
   const { user } = useUserStore();
-  const router = useRouter(); // Thêm dòng này
+  const router = useRouter();
 
   const isEditable =
     user?.roleName === "Admin" || user?.roleName === "Nhân viên";
@@ -39,22 +39,33 @@ export default function FoodCard({ image, name, price, quantity, onEdit, id }) {
         {isEditable ? (
           <Button
             className="w-full cursor-pointer bg-[#ff6b5c] hover:bg-[#ff8575]"
-            onClick={onEdit}
+            onClick={(e) => {
+              e.stopPropagation();
+              onEdit && onEdit();
+            }}
           >
             Chỉnh sửa món ăn
           </Button>
-        ) : quantity === 0 ? (
-          <p className="text-sm font-semibold text-red-500">Tạm hết</p>
         ) : (
-          <p className="text-sm text-gray-400">
-            Còn lại: {new Intl.NumberFormat("vi-VN").format(quantity)}
-          </p>
+          <Button
+            className="w-full bg-[#ff6b5c] hover:bg-[#ff8575]"
+            onClick={(e) => {
+              e.stopPropagation();
+              onAddToCart && onAddToCart({ image, name, price, quantity, id });
+            }}
+            disabled={quantity === 0}
+          >
+            {quantity === 0 ? "Tạm hết" : "Thêm vào giỏ"}
+          </Button>
         )}
         {/* Nút xem chi tiết */}
         <Button
           variant="outline"
           className="w-full mt-2 border-[#ff6b5c] text-[#ff6b5c] hover:bg-[#ff6b5c] hover:text-white"
-          onClick={() => router.push(`/food/${id}`)}
+          onClick={(e) => {
+            e.stopPropagation();
+            router.push(`/food/${id}`);
+          }}
         >
           Xem chi tiết
         </Button>

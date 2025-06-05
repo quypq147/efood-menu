@@ -8,7 +8,6 @@ export interface OrderItemPayload {
 }
 
 export interface CreateOrderPayload {
-  orderNumber: string;
   serveType: string;
   total: number;
   items: OrderItemPayload[];

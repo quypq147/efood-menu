@@ -1,11 +1,17 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { axiosInstance } from '@/lib/axios';
-import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { toast } from 'sonner';
-import BreadcrumbTabs from '@/components/BreadcrumbTabs';
+import { useEffect, useState } from "react";
+import { axiosInstance } from "@/lib/axios";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { toast } from "sonner";
+import BreadcrumbTabs from "@/components/BreadcrumbTabs";
 
 export default function UserListPage() {
   const [users, setUsers] = useState([]);
@@ -13,23 +19,37 @@ export default function UserListPage() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const [userRes, roleRes] = await Promise.all([
-        axiosInstance.get('/users'),
-        axiosInstance.get('/roles'),
-      ]);
-      setUsers(userRes.data);
-      setRoles(roleRes.data);
+      try {
+        const [userRes, roleRes] = await Promise.all([
+          axiosInstance.get("/users"),
+          axiosInstance.get("/roles"),
+        ]);
+        setUsers(userRes.data);
+        setRoles(roleRes.data);
+      } catch (err) {
+        console.error("Lỗi khi fetch users/roles:", err);
+        if (err.response) {
+          console.error("Status:", err.response.status);
+          console.error("Data:", err.response.data);
+          console.error("Headers:", err.response.headers);
+        } else if (err.request) {
+          console.error("Request:", err.request);
+        } else {
+          console.error("Message:", err.message);
+        }
+      }
     };
-
     fetchData();
   }, []);
 
   const handleRoleChange = async (userId: number, newRoleId: string) => {
     try {
-      await axiosInstance.patch(`/users/${userId}/role`, { roleId: +newRoleId });
-      toast.success('Cập nhật vai trò thành công');
+      await axiosInstance.patch(`/users/${userId}/role`, {
+        roleId: +newRoleId,
+      });
+      toast.success("Cập nhật vai trò thành công");
     } catch {
-      toast.error('Thất bại khi cập nhật vai trò');
+      toast.error("Thất bại khi cập nhật vai trò");
     }
   };
 
@@ -39,13 +59,21 @@ export default function UserListPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {users.map((user: any) => (
-          <div key={user.id} className="bg-[#2a2a3c] p-5 rounded-lg shadow flex justify-between items-center hover:shadow-lg transition">
+          <div
+            key={user.id}
+            className="bg-[#2a2a3c] p-5 rounded-lg shadow flex justify-between items-center hover:shadow-lg transition"
+          >
             <div>
-              <div className="text-base font-semibold">{user.fullname || user.name}</div>
+              <div className="text-base font-semibold">
+                {user.fullname || user.name}
+              </div>
               <div className="text-sm text-gray-400">{user.email}</div>
             </div>
 
-            <Select defaultValue={String(user.roleId)} onValueChange={(v) => handleRoleChange(user.id, v)}>
+            <Select
+              defaultValue={String(user.roleId)}
+              onValueChange={(v) => handleRoleChange(user.id, v)}
+            >
               <SelectTrigger className="w-[150px] bg-white text-black">
                 <SelectValue placeholder="Vai trò" />
               </SelectTrigger>
@@ -63,4 +91,3 @@ export default function UserListPage() {
     </div>
   );
 }
-

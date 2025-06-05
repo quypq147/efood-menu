@@ -39,7 +39,7 @@ export default function RolePermissionMatrix() {
   const [permissions, setPermissions] = useState<Permission[]>([]);
   const [matrix, setMatrix] = useState<RolePermissionMatrix>({});
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 8; // Số quyền mỗi trang
+  const itemsPerPage = 7; // Số quyền mỗi trang
 
   useEffect(() => {
     const fetchData = async () => {
@@ -151,7 +151,9 @@ export default function RolePermissionMatrix() {
                     <td key={role.id} className="text-center">
                       <Checkbox
                         checked={matrix[role.id]?.[perm.id] || false}
-                        onCheckedChange={() => togglePermission(role.id, perm.id)}
+                        onCheckedChange={() =>
+                          togglePermission(role.id, perm.id)
+                        }
                         className="border-gray-400 data-[state=checked]:bg-[#ff6b5c] data-[state=checked]:border-[#ff6b5c]"
                       />
                     </td>
@@ -185,7 +187,9 @@ export default function RolePermissionMatrix() {
             ))}
             <PaginationItem>
               <PaginationNext
-                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                onClick={() =>
+                  setCurrentPage((p) => Math.min(totalPages, p + 1))
+                }
                 aria-disabled={currentPage === totalPages}
               />
             </PaginationItem>

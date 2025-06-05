@@ -11,7 +11,7 @@ export default function PaymentPage({ cart, total, onBack, onConfirm }) {
       animate={{ x: 0, opacity: 1 }}
       exit={{ x: 400, opacity: 0 }}
       transition={{ type: "spring", stiffness: 200, damping: 30 }}
-      className="w-[400px] bg-[#232336] h-screen overflow-y-auto scrollbar-hide p-6 rounded-2xl"
+      className="w-[400px] bg-[#232336] text-white h-screen overflow-y-auto scrollbar-hide p-6 rounded-2xl"
     >
       <h2 className="text-xl font-bold mb-4">Thanh toán</h2>
       <div className="mb-4">

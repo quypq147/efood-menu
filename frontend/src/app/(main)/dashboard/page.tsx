@@ -3,12 +3,12 @@
 import React from "react";
 import DashBoard from "@/components/DashBoard";
 
-function page() {
+function DashboardPage() {
   return (
-    <div className="flex flex-col justify-center h-screen  text-white">
+    <div className="overflow-hidden p-5 text-white">
       <DashBoard />
     </div>
   );
 }
 
-export default page;
+export default DashboardPage;

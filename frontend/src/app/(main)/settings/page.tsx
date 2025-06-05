@@ -12,6 +12,8 @@ import FoodManagementPage from "@/components/FoodManagementPage";
 import { Button } from "@/components/ui/button";
 import AppearanceSetting from "@/components/AppearanceSetting";
 import { motion, AnimatePresence } from "framer-motion";
+import AboutUs from "@/components/about-us";
+import { useUserStore } from "@/store/userStore";
 
 const sidebarItems = [
   {
@@ -37,16 +39,22 @@ const sidebarItems = [
 ];
 
 export default function SettingsPage() {
+  const user = useUserStore((state) => state.user);
   const [activeTab, setActiveTab] = useState(sidebarItems[0].label);
-
+  console.log("User in SettingsPage:", user);
+  const filteredSidebarItems = sidebarItems.filter(
+    (item) =>
+      item.label !== "Quản lý sản phẩm" ||
+      (user && user.roleName !== "Customer" && user.roleName !== "Guest")
+  );
   return (
-    <div className="flex p-5 ml-10 h-screen text-white">
+    <div className="flex p-5 ml-10 h-screen text-white ">
       {/* Header */}
       <div className="flex flex-col">
         <h1 className="text-2xl font-bold mb-6">Cài Đặt</h1>
         {/* Sidebar */}
         <aside className="w-72 bg-[#252836] p-6 space-y-4">
-          {sidebarItems.map((item) => (
+          {filteredSidebarItems.map((item) => (
             <button
               key={item.label}
               onClick={() => setActiveTab(item.label)}
@@ -133,7 +141,7 @@ export default function SettingsPage() {
                 exit={{ opacity: 0, y: -30 }}
                 transition={{ duration: 0.3 }}
               >
-                <div>Information about us goes here...</div>
+                <AboutUs />
               </motion.div>
             )}
           </AnimatePresence>

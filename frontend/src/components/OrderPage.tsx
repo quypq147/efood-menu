@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
@@ -8,20 +8,23 @@ import { createOrder } from "@/api/order";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 
-export default function OrderPage({ cart, onUpdateCart, onRemoveItem, onCheckout, user }) {
+export default function OrderPage({
+  cart,
+  onUpdateCart,
+  onRemoveItem,
+  onCheckout,
+  user,
+}) {
   const [notes, setNotes] = useState({});
-  const [orderNumber, setOrderNumber] = useState("");
   const [serveType, setServeType] = useState("dine-in");
   const [loading, setLoading] = useState(false);
+  const [errorFoodId, setErrorFoodId] = useState(null);
+  const [errorMessage, setErrorMessage] = useState("");
   const router = useRouter();
 
   const handleNoteChange = (id, value) => {
     setNotes((prev) => ({ ...prev, [id]: value }));
   };
-
-  useEffect(() => {
-    setOrderNumber(Math.floor(Math.random() * 100000).toString());
-  }, []);
 
   const calculateTotal = () => {
     return cart.reduce((total, item) => total + item.price * item.quantity, 0);
@@ -29,14 +32,35 @@ export default function OrderPage({ cart, onUpdateCart, onRemoveItem, onCheckout
 
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
 
+  // Khi nhập số lượng
+  const handleQuantityChange = (id, value) => {
+    if (value <= 0) {
+      setErrorFoodId(id);
+      setErrorMessage("Không đủ số lượng món ăn!");
+      return;
+    }
+    setErrorFoodId(null);
+    setErrorMessage("");
+    onUpdateCart(id, value);
+  };
+
+  // Khi thanh toán
   const handleCheckoutClick = async () => {
+    // Kiểm tra có món nào số lượng <= 0 không
+    const invalidItem = cart.find((item) => item.quantity <= 0);
+    if (invalidItem) {
+      setErrorFoodId(invalidItem.id);
+      setErrorMessage("Không đủ số lượng món ăn!");
+      return;
+    }
+    setErrorFoodId(null);
+    setErrorMessage("");
     setLoading(true);
     try {
       await createOrder({
-        orderNumber,
         serveType,
         total: calculateTotal(),
-        items: cart.map(item => ({
+        items: cart.map((item) => ({
           foodId: item.id,
           quantity: item.quantity,
           price: item.price,
@@ -44,17 +68,42 @@ export default function OrderPage({ cart, onUpdateCart, onRemoveItem, onCheckout
         })),
         userId: user?.id,
       });
-      router.push("/payment-success");
+      onCheckout();
     } catch (err) {
-      alert("Tạo đơn hàng thất bại!");
+      if (err?.response?.data?.message) {
+        setErrorMessage("Tạo đơn hàng thất bại: " + err.response.data.message);
+      } else if (err?.message) {
+        setErrorMessage("Tạo đơn hàng thất bại: " + err.message);
+      } else {
+        setErrorMessage("Tạo đơn hàng thất bại!");
+      }
     } finally {
       setLoading(false);
     }
   };
 
+  // Tự động ẩn thông báo sau 2s
+  useEffect(() => {
+    if (errorMessage) {
+      const timer = setTimeout(() => {
+        setErrorMessage("");
+        setErrorFoodId(null);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [errorMessage]);
+
   return (
-    <div className="p-6 text-white min-h-screen rounded-2xl w-full max-w-[400px] mx-auto">
-      <h1 className="text-xl font-bold mb-2">Orders #{orderNumber}</h1>
+    <div className="p-6 text-white min-h-screen rounded-2xl w-full max-w-[400px] mx-auto relative">
+      {/* Thông báo lỗi nổi giữa màn hình */}
+      {errorMessage && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none">
+          <div className="bg-red-600 text-white px-6 py-3 rounded-lg shadow-lg text-lg font-semibold animate-bounce">
+            {errorMessage}
+          </div>
+        </div>
+      )}
+      <h1 className="text-xl font-bold mb-2">Bảng Đơn Hàng</h1>
       <div className="mb-2 text-sm text-gray-400">
         Tổng số món: <span className="font-bold text-white">{totalItems}</span>
       </div>
@@ -62,21 +111,33 @@ export default function OrderPage({ cart, onUpdateCart, onRemoveItem, onCheckout
       <div className="flex gap-2 mb-4">
         <Button
           variant={serveType === "dine-in" ? "secondary" : "ghost"}
-          className={serveType === "dine-in" ? "bg-[#ff6b5c] text-white rounded-full px-4 py-1" : "text-[#ff6b5c] rounded-full px-4 py-1"}
+          className={
+            serveType === "dine-in"
+              ? "bg-[#ff6b5c] text-white rounded-full px-4 py-1"
+              : "text-[#ff6b5c] rounded-full px-4 py-1"
+          }
           onClick={() => setServeType("dine-in")}
         >
           Ăn tại chỗ
         </Button>
         <Button
           variant={serveType === "to-go" ? "secondary" : "ghost"}
-          className={serveType === "to-go" ? "bg-[#ff6b5c] text-white rounded-full px-4 py-1" : "text-[#ff6b5c] rounded-full px-4 py-1"}
+          className={
+            serveType === "to-go"
+              ? "bg-[#ff6b5c] text-white rounded-full px-4 py-1"
+              : "text-[#ff6b5c] rounded-full px-4 py-1"
+          }
           onClick={() => setServeType("to-go")}
         >
           Mang đi
         </Button>
         <Button
           variant={serveType === "delivery" ? "secondary" : "ghost"}
-          className={serveType === "delivery" ? "bg-[#ff6b5c] text-white rounded-full px-4 py-1" : "text-[#ff6b5c] rounded-full px-4 py-1"}
+          className={
+            serveType === "delivery"
+              ? "bg-[#ff6b5c] text-white rounded-full px-4 py-1"
+              : "text-[#ff6b5c] rounded-full px-4 py-1"
+          }
           onClick={() => setServeType("delivery")}
         >
           Giao hàng
@@ -98,11 +159,17 @@ export default function OrderPage({ cart, onUpdateCart, onRemoveItem, onCheckout
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 40 }}
               transition={{ duration: 0.2 }}
-              className="flex items-center gap-3 bg-[#2a2a3c] rounded-lg p-3 shadow"
+              className={`flex items-center gap-3 bg-[#2a2a3c] rounded-lg p-3 shadow
+                ${errorFoodId === item.id ? "opacity-40 pointer-events-none grayscale" : ""}
+              `}
             >
               <div className="w-14 h-14 rounded-lg overflow-hidden bg-gray-700 flex-shrink-0">
                 <Image
-                  src={`http://localhost:30${item.image.startsWith('/') ? item.image : `/uploads/${item.image}`}`}
+                  src={`${process.env.NEXT_PUBLIC_API_URL}${
+                    item.image.startsWith("/")
+                      ? item.image
+                      : `/uploads/${item.image}`
+                  }`}
                   alt={item.name}
                   width={56}
                   height={56}
@@ -111,19 +178,28 @@ export default function OrderPage({ cart, onUpdateCart, onRemoveItem, onCheckout
               </div>
               <div className="flex-1 flex flex-col gap-1">
                 <div className="flex justify-between items-center">
-                  <span className="font-semibold text-base truncate max-w-[120px]">{item.name}</span>
+                  <span className="font-semibold text-base truncate max-w-[120px]">
+                    {item.name}
+                  </span>
                   <span className="font-semibold text-[#ff6b5c] text-base">
                     {(item.price * item.quantity).toLocaleString("vi-VN")}₫
                   </span>
                 </div>
-                <span className="text-xs text-gray-400">{item.price.toLocaleString("vi-VN")}₫</span>
+                <span className="text-xs text-gray-400">
+                  {item.price.toLocaleString("vi-VN")}₫
+                </span>
                 <div className="flex items-center gap-2 mt-1">
                   <span className="text-xs text-gray-400">SL:</span>
                   <input
                     type="number"
                     min={1}
                     value={item.quantity}
-                    onChange={(e) => onUpdateCart(item.id, Math.max(1, parseInt(e.target.value) || 1))}
+                    onChange={(e) =>
+                      handleQuantityChange(
+                        item.id,
+                        Math.max(0, parseInt(e.target.value) || 0)
+                      )
+                    }
                     className="w-12 bg-[#232336] text-white border border-gray-600 rounded text-center text-sm"
                   />
                   <Button
@@ -169,4 +245,3 @@ export default function OrderPage({ cart, onUpdateCart, onRemoveItem, onCheckout
     </div>
   );
 }
-

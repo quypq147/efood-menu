@@ -2,14 +2,20 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { OrderStatus } from '@prisma/client';
 
+function generateOrderNumber() {
+  // Ví dụ: số ngẫu nhiên 5 chữ số, hoặc bạn có thể dùng nanoid, uuid, hoặc timestamp
+  return Math.floor(10000 + Math.random() * 90000).toString();
+}
 @Injectable()
 export class OrderService {
   constructor(private prisma: PrismaService) {}
 
   async createOrder(data: any) {
     for (const item of data.items) {
+      const foodId = item.foodId ?? item.id;
+      if (!foodId) throw new Error('Thiếu foodId hoặc id trong item!');
       const food = await this.prisma.food.findUnique({
-        where: { id: item.foodId },
+        where: { id: foodId },
       });
       if (!food) throw new Error(`Món ăn không tồn tại`);
       if (food.quantity < item.quantity) {
@@ -19,24 +25,25 @@ export class OrderService {
       }
     }
     for (const item of data.items) {
-    await this.prisma.food.update({
-      where: { id: item.foodId },
-      data: { quantity: { decrement: item.quantity } },
-    });
+      const foodId = item.foodId ?? item.id;
+      await this.prisma.food.update({
+        where: { id: foodId },
+        data: { quantity: { decrement: item.quantity } },
+      });
     }
     return this.prisma.order.create({
       data: {
-        orderNumber: data.orderNumber,
-        userId: data.userId ?? null, // <-- Có thể null
-        total: data.total,
-        serverType: data.serverType,
+        orderNumber: generateOrderNumber(),
+        userId: data.userId ?? null,
+        total: data.total ?? 0,
+        serverType: data.serveType ?? data.serverType ?? 'dine-in',
         status: data.status || 'PENDING',
         items: {
           create: data.items.map((item) => ({
-            foodId: item.foodId,
+            foodId: item.foodId ?? item.id,
             quantity: item.quantity,
-            price: item.price,
-            note: item.note,
+            price: item.price ?? 0,
+            note: item.note ?? '',
           })),
         },
       },

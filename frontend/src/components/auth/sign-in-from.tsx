@@ -24,21 +24,29 @@ export default function SignInForm() {
   const setUser = useUserStore((state) => state.setUser);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    try {
-      const res = await loginUser(form);
-      setUser(res.user);
-      toast.success("🎉 Đăng nhập thành công!");
-      router.push("/");
-    } catch (err: any) {
-      const msg = err?.response?.data?.message;
-      toast.error(msg || "Đăng nhập thất bại");
-      if (msg?.includes("chưa xác minh")) setShowResend(true);
-    } finally {
-      setLoading(false);
+  e.preventDefault();
+  setLoading(true);
+  try {
+    const res = await loginUser(form);
+    console.log("Login response:", res);
+    // Thêm log chi tiết
+    if (!res.token) {
+      console.error("Không nhận được token từ API! Response:", res);
+      toast.error("Đăng nhập thất bại: Không nhận được token từ server.");
+      return;
     }
-  };
+    localStorage.setItem("token", res.token);
+    setUser(res.user);
+    toast.success("🎉 Đăng nhập thành công!");
+    router.push("/");
+  } catch (err: any) {
+    const msg = err?.response?.data?.message;
+    toast.error(msg || "Đăng nhập thất bại");
+    if (msg?.includes("chưa xác minh")) setShowResend(true);
+  } finally {
+    setLoading(false);
+  }
+};
   const handleResend = async () => {
     try {
       await resendVerifyEmail(form.emailOrUsername);

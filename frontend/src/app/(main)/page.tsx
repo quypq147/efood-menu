@@ -1,33 +1,48 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import FoodListPage from '@/components/FoodListPage';
+import { useState } from "react";
+import FoodListPage from "@/components/FoodListPage";
 import { useRouter } from "next/navigation";
-import OrderPage from '@/components/OrderPage';
-import PaymentPage from '@/components/PaymentPage';
+import OrderPage from "@/components/OrderPage";
+import PaymentPage from "@/components/PaymentPage";
 import { motion, AnimatePresence } from "framer-motion";
-import { toast } from 'sonner';
+import { toast } from "sonner";
+import { axiosInstance } from "@/lib/axios";
 
 export default function HomePage() {
   const [cart, setCart] = useState([]);
   const [showPayment, setShowPayment] = useState(false);
   const router = useRouter();
+  const [serveType, setServeType] = useState("dine-in");
 
   const handleAddToCart = (food) => {
-    const existingItem = cart.find((item) => item.id === food.id);
-    if (existingItem) {
-      setCart(
-        cart.map((item) =>
-          item.id === food.id ? { ...item, quantity: item.quantity + 1 } : item
-        )
-      );
-    } else {
-      setCart([...cart, { ...food, quantity: 1 }]);
-    }
-  };
+  if (!food.id) {
+    toast.error("Món ăn không hợp lệ!");
+    return;
+  }
+  // Kiểm tra số lượng còn lại (food.quantity là số lượng còn lại trong kho)
+  const existingItem = cart.find((item) => item.id === food.id);
+  const maxQuantity = food.quantity ?? 0;
+  const currentQuantity = existingItem ? existingItem.quantity : 0;
+  if (maxQuantity === 0 || currentQuantity + 1 > maxQuantity) {
+    toast.error(`Món "${food.name}" không đủ số lượng`);
+    return;
+  }
+  if (existingItem) {
+    setCart(
+      cart.map((item) =>
+        item.id === food.id ? { ...item, quantity: item.quantity + 1 } : item
+      )
+    );
+  } else {
+    setCart([...cart, { ...food, quantity: 1 }]);
+  }
+};
 
   const handleUpdateCart = (id, quantity) => {
-    setCart(cart.map((item) => (item.id === id ? { ...item, quantity } : item)));
+    setCart(
+      cart.map((item) => (item.id === id ? { ...item, quantity } : item))
+    );
   };
 
   const handleRemoveItem = (id) => {
@@ -35,32 +50,58 @@ export default function HomePage() {
   };
 
   const handleCheckout = () => {
-  if (cart.length === 0) {
-    toast.error("Giỏ hàng trống!");
-    return;
-  }
-  setShowPayment(true);
-};
+    if (cart.length === 0) {
+      toast.error("Giỏ hàng trống!");
+      return;
+    }
+    setShowPayment(true);
+  };
 
   const handleBackToOrder = () => {
     setShowPayment(false);
   };
 
-  const handleConfirmPayment = () => {
-  if (cart.length === 0) {
-    toast.error("Không có món nào để thanh toán!");
+  const handleConfirmPayment = async () => {
+    
+    if (cart.length === 0) {
+      toast.error("Không có món nào để thanh toán!");
+      return;
+    }
+    if (cart.some(item => !item.id)) {
+    toast.error("Có món ăn không hợp lệ trong giỏ hàng!");
     return;
   }
-  const fakeOrderId = 123;
-  setCart([]);
-  toast.success("Thanh toán thành công!");
-  router.push(`/payment-success?orderId=${fakeOrderId}`);
-};
+    try {
+      const items = cart.map(item => ({
+      foodId: item.id,
+      quantity: item.quantity,
+      price: item.price,
+      note: "", // hoặc notes[item.id] nếu có
+      }));
+      // Gửi đơn hàng lên backend
+      const res = await axiosInstance.post("/orders", {
+        serveType,
+        total,
+        items,  
+        // Thêm các thông tin khác nếu cần: serveType, notes, userId...
+      });
+      // Lấy orderId thực tế từ backend
+      console.log("Đơn hàng đã tạo:", res.data);
+      setCart([]);
+      toast.success("Thanh toán thành công!");
+      router.push(`/payment-success?orderId=${res.data.id}`);
+    } catch (err) {
+      toast.error("Tạo đơn hàng thất bại!");
+    }
+  };
 
-  const total = cart.reduce((total, item) => total + item.price * item.quantity, 0);
+  const total = cart.reduce(
+    (total, item) => total + item.price * item.quantity,
+    0
+  );
 
   return (
-    <div className="flex h-screen">
+    <div className="flex h-screen overflow-hidden">
       {/* Nội dung chính */}
       <div className="flex-1 flex">
         <div className="flex-1 p-10 overflow-y-auto scrollbar-hide">
@@ -82,6 +123,8 @@ export default function HomePage() {
                 onRemoveItem={handleRemoveItem}
                 onCheckout={handleCheckout}
                 user={undefined}
+                serveType={serveType}
+                setServeType={setServeType}
               />
             </motion.div>
           ) : (

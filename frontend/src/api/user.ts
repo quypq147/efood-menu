@@ -12,7 +12,10 @@ export const updateCurrentUser = async (data: {
   address?: string;
   birthDate?: string;
 }) => {
-  const res = await axiosInstance.patch('/users/me', data, { withCredentials: true });
-  console.log(res.data);
+  const token = localStorage.getItem('token'); // hoặc nơi bạn lưu token
+  const res = await axiosInstance.patch('/users/me', data, {
+    withCredentials: true,
+    headers: { Authorization: `Bearer ${token}` }
+  });
   return res.data;
 };

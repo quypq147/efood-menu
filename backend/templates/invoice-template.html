@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Hóa đơn #{{orderNumber}}</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #fff8f3;
+      color: #232336;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 600px;
+      margin: 30px auto;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 24px rgba(255,107,92,0.08);
+      padding: 32px 36px 24px 36px;
+      border: 2px solid #ff6b5c;
+    }
+    .header {
+      text-align: center;
+      font-size: 26px;
+      font-weight: bold;
+      color: #ff6b5c;
+      letter-spacing: 2px;
+      margin-bottom: 8px;
+    }
+    .brand {
+      text-align: center;
+      font-size: 18px;
+      color: #232336;
+      margin-bottom: 2px;
+      font-weight: 600;
+    }
+    .address {
+      text-align: center;
+      font-size: 13px;
+      color: #888;
+      margin-bottom: 18px;
+    }
+    .info {
+      margin-bottom: 18px;
+      font-size: 15px;
+    }
+    .info span {
+      display: inline-block;
+      min-width: 120px;
+      font-weight: 500;
+    }
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      margin-bottom: 18px;
+    }
+    .table th, .table td {
+      border: 1px solid #ffb3a7;
+      padding: 8px 10px;
+      text-align: center;
+      font-size: 15px;
+    }
+    .table th {
+      background: #ffebe7;
+      color: #ff6b5c;
+      font-weight: bold;
+    }
+    .table td {
+      background: #fff;
+    }
+    .total {
+      text-align: right;
+      font-size: 20px;
+      color: #ff6b5c;
+      font-weight: bold;
+      margin-top: 10px;
+      margin-bottom: 20px;
+    }
+    .footer {
+      text-align: center;
+      font-size: 14px;
+      color: #888;
+      margin-top: 30px;
+    }
+    .thank {
+      color: #ff6b5c;
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .logo {
+      display: block;
+      margin: 0 auto 10px auto;
+      width: 60px;
+      height: 60px;
+      object-fit: contain;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Nếu có logo, thay src bằng đường dẫn logo của bạn -->
+    <img src="../uploads/logo/logo.svg" alt="Efood Logo" class="logo" />
+    <div class="brand">Efood Restaurant</div>
+    <div class="address">123 Đường ABC, Quận 1, TP.HCM | Hotline: 0123 456 789</div>
+    <div class="header">HÓA ĐƠN THANH TOÁN</div>
+    <div class="info">
+      <span>Mã đơn:</span> #{{orderNumber}}<br>
+      <span>Ngày:</span> {{createdAt}}
+    </div>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Tên món</th>
+          <th>Số lượng</th>
+          <th>Đơn giá</th>
+          <th>Thành tiền</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each items}}
+        <tr>
+          <td style="text-align:left;">{{this.food.name}}</td>
+          <td>{{this.quantity}}</td>
+          <td>{{this.price}}</td>
+          <td>{{multiply this.price this.quantity}}</td>
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
+    <div class="total">Tổng cộng: {{total}}₫</div>
+    <div class="footer">
+      <div class="thank">Cảm ơn quý khách đã sử dụng dịch vụ của Efood!</div>
+      Hẹn gặp lại quý khách lần sau.
+    </div>
+  </div>
+</body>
+</html>

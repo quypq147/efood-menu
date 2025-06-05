@@ -90,7 +90,7 @@ export default function FoodManagementPage() {
   }
 
   return (
-    <div className="p-5 bg-[#252836] text-white rounded-lg">
+    <div className="p-5 bg-[#252836] text-white rounded-lg ">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Quản lý món ăn</h1>
         <Button
@@ -119,7 +119,7 @@ export default function FoodManagementPage() {
       </div>
 
       {/* Grid hiển thị món ăn */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 scrollbar-hide">
         {filteredFood.map((food) => (
           <FoodCard
             key={food.id}
