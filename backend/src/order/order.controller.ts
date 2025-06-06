@@ -61,10 +61,11 @@ export class OrderController {
 
     // Đọc template HTML
     const templatePath = path.join(
-      __dirname,
-      '../../templates/invoice-template.html',
+      process.env.NODE_ENV === 'production'
+        ? path.join(__dirname, 'templates', 'invoice-template.html')
+        : path.join(process.cwd(), 'templates', 'invoice-template.html'),
     );
-    const html = fs.readFileSync(templatePath, 'utf8');
+    const html = fs.readFileSync(templatePath, 'utf-8');
 
     // Compile template với Handlebars
     Handlebars.registerHelper('multiply', (a, b) => a * b);

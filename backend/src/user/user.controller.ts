@@ -10,7 +10,6 @@ import {
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { UserService } from './user.service';
 import { RequestWithUser } from '../common/interfaces/request-with-user';
-import { AuthGuard } from '@nestjs/passport';
 
 @Controller('users')
 export class UserController {

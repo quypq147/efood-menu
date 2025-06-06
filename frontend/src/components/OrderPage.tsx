@@ -53,6 +53,7 @@ export default function OrderPage({
       setErrorMessage("Không đủ số lượng món ăn!");
       return;
     }
+    console.log("User khi tạo đơn hàng:", user);
     setErrorFoodId(null);
     setErrorMessage("");
     setLoading(true);
@@ -160,7 +161,11 @@ export default function OrderPage({
               exit={{ opacity: 0, x: 40 }}
               transition={{ duration: 0.2 }}
               className={`flex items-center gap-3 bg-[#2a2a3c] rounded-lg p-3 shadow
-                ${errorFoodId === item.id ? "opacity-40 pointer-events-none grayscale" : ""}
+                ${
+                  errorFoodId === item.id
+                    ? "opacity-40 pointer-events-none grayscale"
+                    : ""
+                }
               `}
             >
               <div className="w-14 h-14 rounded-lg overflow-hidden bg-gray-700 flex-shrink-0">

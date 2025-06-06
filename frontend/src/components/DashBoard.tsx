@@ -216,7 +216,7 @@ export default function DashBoard() {
   // Dữ liệu cho bảng đơn hàng
   const orderTableData = orders.map((order) => ({
     id: order.id,
-    customer: order.user?.name || "Khách vãng lai",
+    customer: order.user?.fullname || order.user?.username || "Khách vãng lai",
     menu: order.items.map((i) => i.food?.name || "").join(", "),
     payment: order.total?.toLocaleString("vi-VN") + "₫",
     status: order.status,

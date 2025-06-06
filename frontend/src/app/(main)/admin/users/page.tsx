@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { axiosInstance } from "@/lib/axios";
-import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -28,15 +27,6 @@ export default function UserListPage() {
         setRoles(roleRes.data);
       } catch (err) {
         console.error("Lỗi khi fetch users/roles:", err);
-        if (err.response) {
-          console.error("Status:", err.response.status);
-          console.error("Data:", err.response.data);
-          console.error("Headers:", err.response.headers);
-        } else if (err.request) {
-          console.error("Request:", err.request);
-        } else {
-          console.error("Message:", err.message);
-        }
       }
     };
     fetchData();
