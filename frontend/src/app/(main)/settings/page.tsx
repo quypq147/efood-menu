@@ -27,11 +27,6 @@ const sidebarItems = [
     description: "Tuỳ chỉnh sản phẩm, giá cả, v.v.",
   },
   {
-    label: "Thông báo",
-    icon: Bell,
-    description: "Tuỳ chỉnh thông báo của bạn",
-  },
-  {
     label: "Về chúng tôi",
     icon: Info,
     description: "Tìm hiểu thêm về chúng tôi",
@@ -120,17 +115,6 @@ export default function SettingsPage() {
                 transition={{ duration: 0.3 }}
               >
                 <FoodManagementPage />
-              </motion.div>
-            )}
-            {activeTab === "Thông báo" && (
-              <motion.div
-                key="notification"
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -30 }}
-                transition={{ duration: 0.3 }}
-              >
-                <div>Notification settings go here...</div>
               </motion.div>
             )}
             {activeTab === "Về chúng tôi" && (
